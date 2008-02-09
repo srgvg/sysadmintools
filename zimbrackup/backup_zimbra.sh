@@ -32,13 +32,13 @@
 # backup_dir - directory to backup to 
 zm_backup_path=/opt.bak
 
-# zimbra_vol - the Logical Volume that contains /opt/zimbra - /opt mount point expected
+# zm_lv - the Logical Volume that contains /opt/zimbra - /opt mount point expected
 zm_lv=opt
 
-# vol_group - the Volume Group that contains $zimbra_vol
+# vol_group - the Volume Group that contains $zm_lv
 zm_vg=data
 
-# zimbra_path - the path beneath the Logical Volume $zimbra_col that needs to be synced
+# zimbra_path - the path beneath the Logical Volume $zm_lv that needs to be synced
 zm_path=
 
 # zm_lv_fs - the file system type (ext3, xfs, ...) in /opt/zimbra
@@ -50,7 +50,7 @@ LVREMOVE=/sbin/lvremove
 
 #### Modify the following variables according to your taste and needs
 
-# zmsnapshot - the snapshot volume name for $zm_vol
+# zmsnapshot - the snapshot volume name for $zm_lv
 zm_snapshot=opt-snapshot
 
 # zmsnapshot_size - size avalable for growing the snapshot
@@ -62,6 +62,9 @@ zm_snapshot_path=/tmp/opt-snapshot
 # rsync verbose set to "v"
 # V=v
 V=
+
+#  pause at each step if $debug is set to a non-zero string
+debug=
 
 #### Following parameters probably shouldn't need to be changed
 
@@ -75,6 +78,13 @@ log_tag="$0"
 # Do not change anything beyond this point
 ##########################################
 
+pause() {
+        if [ -n "$debug" ]; then
+        echo "Press Enter to execute this step..";
+        read input;
+        fi
+        }
+
 say() { 
 	MESSAGE_PREFIX="zimbra backup:"
 	MESSAGE="$1"
@@ -82,6 +92,7 @@ say() {
 	echo -e "$TIMESTAMP $MESSAGE_PREFIX $MESSAGE"
 	logger -t $log_tag -p $log_facility.$log_level "$MESSAGE" 
 	logger -t $log_tag -p $log_facility_mail.$log_level "$MESSAGE"
+	pause
 	}
 
 error ()  {
@@ -103,6 +114,7 @@ say "backup started"
 # Stop the Zimbra services
 say "stopping the Zimbra services, this may take some time"
 /etc/init.d/zimbra stop || error "error stopping Zimbra" 
+kill -9 $(ps -u zimbra -o "pid=") || error "Error stopping Zimbra" #added as a workaround to zimbra bug 18653
 
 # Create a logical volume called ZimbraBackup
 say "creating a LV called $zm_snapshot"
@@ -122,7 +134,7 @@ mount -t $zm_lv_fs -o nouuid,ro /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
 
 # Create the current backup
 say "rsyncing the snapshot to the backup directory $backup_dir"
-rsync -a$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
+rsync -aAH$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
 
 # Unmount $zm_snapshot from $zm_snapshot_mnt
 say "unmounting the snapshot"
