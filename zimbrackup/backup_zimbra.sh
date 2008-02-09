@@ -26,53 +26,22 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #    Or download it from http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
-  
-#### Modify the following variables according to your installation
+####################################################################################
 
-# backup_dir - directory to backup to 
-zm_backup_path=/opt.bak
-
-# zm_lv - the Logical Volume that contains /opt/zimbra - /opt mount point expected
-zm_lv=opt
-
-# vol_group - the Volume Group that contains $zm_lv
-zm_vg=data
-
-# zimbra_path - the path beneath the Logical Volume $zm_lv that needs to be synced
-zm_path=
-
-# zm_lv_fs - the file system type (ext3, xfs, ...) in /opt/zimbra
-zm_lv_fs=ext3
-
-# lvcreate lvremove - path and command for the lvm logical volume creation and deletion command
-LVCREATE=/sbin/lvcreate
-LVREMOVE=/sbin/lvremove
-
-#### Modify the following variables according to your taste and needs
-
-# zmsnapshot - the snapshot volume name for $zm_lv
-zm_snapshot=opt-snapshot
-
-# zmsnapshot_size - size avalable for growing the snapshot
-zm_snapshot_size=1GB
-
-# zm_snapshot_mnt - zimbra snapshot mount point
-zm_snapshot_path=/tmp/opt-snapshot
-
-# rsync verbose set to "v"
-# V=v
-V=
-
-#  pause at each step if $debug is set to a non-zero string
-debug=
-
-#### Following parameters probably shouldn't need to be changed
-
-log_facility=daemon
-log_facility_mail=mail
-log_level=notice
-log_level_err=error
-log_tag="$0"
+# Read config   
+source backup_zimbra_config
+# zm_backup_path=/opt.bak
+# zm_lv=opt
+# zm_vg=data
+# zm_path=
+# zm_lv_fs=ext3
+# LVCREATE=/sbin/lvcreate
+# LVREMOVE=/sbin/lvremove
+# zm_snapshot=opt-snapshot
+# zm_snapshot_size=1GB
+# zm_snapshot_path=/tmp/opt-snapshot
+# V=
+# debug=
 
 ##########################################
 # Do not change anything beyond this point
@@ -106,7 +75,7 @@ error ()  {
 	}
 
 # load kernel module to enable LVM snapshots
-/sbin/modprobe dm-snapshot
+/sbin/modprobe dm-snapshot || error "Error loading dm-snapshot module"
 
 # Output date
 say "backup started"
