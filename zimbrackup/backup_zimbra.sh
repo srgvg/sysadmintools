@@ -41,6 +41,9 @@ zm_vg=data
 # zimbra_path - the path beneath the Logical Volume $zimbra_col that needs to be synced
 zm_path=
 
+# zm_lv_fs - the file system type (ext3, xfs, ...) in /opt/zimbra
+zm_lv_fs=ext3
+
 # lvcreate lvremove - path and command for the lvm logical volume creation and deletion command
 LVCREATE=/sbin/lvcreate
 LVREMOVE=/sbin/lvremove
@@ -115,7 +118,7 @@ mkdir -p $zm_snapshot_path || error "error creating snapshot mount point $zm_sna
 
 # Mount the logical volume snapshot to the mountpoint
 say "mounting the snapshot $zm_snapshot"
-mount /dev/$zm_vg/$zm_snapshot $zm_snapshot_path -t ext3
+mount -t $zm_lv_fs -o nouuid,ro /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
 
 # Create the current backup
 say "rsyncing the snapshot to the backup directory $backup_dir"
