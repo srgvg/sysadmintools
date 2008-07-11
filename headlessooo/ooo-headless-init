@@ -39,16 +39,16 @@ case "$1" in
     if [ -f $PIDFILE_OOO ]; then
       echo "Stopping OpenOffice headless server."
       su $OOO_USER -c "pkill -9 -U $OOO_USER soffice" \
-      	&& su $OOO_USER -c "pkill -9 -U $OOO_USER soffice.bin" \
+      	&& su $OOO_USER -c "pkill -9 -U $OOO_USER soffice.bin" 
       rm -f $PIDFILE_OOO
     else
       echo "Openoffice headless server is not running, foo."
     fi
 
-    if [ -f $PIDFILE_OOO ]; then
+    if [ -f $PIDFILE_XVFB ]; then
       echo "Stopping X frame buffer for OpenOffice headless server."
       su $OOO_USER -c "pkill -9 -U $OOO_USER Xvfb"
-    rm -f $PIDFILE_OOO
+      rm -f $PIDFILE_XVFB
     else
       echo "X frame buffer for Openoffice headless server is not running, foo."
     fi
