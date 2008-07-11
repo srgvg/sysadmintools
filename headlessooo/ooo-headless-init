@@ -11,6 +11,7 @@ SOFFICE_BIN=/usr/bin/ooffice
 XVFB_BIN=/usr/bin/Xvfb
 PIDFILE_XVFB=/var/run/xvfb-ooffice-server.pid
 PIDFILE_OOO=/var/run/ooffice-server.pid
+DISPLAY=":99"
 
 cd $OOO_HOME
 
