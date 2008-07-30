@@ -1,0 +1,64 @@
+#
+# Configuration
+#
+
+# Destination server hierarchical separator
+separator=/
+
+# Root for generated report files
+reportroot=./reports
+
+# Timestamp suffix for reports
+timestamp=`date '+%d%m%Y'`
+
+
+
+
+#
+# Create report root if it does not exist
+#
+[ ! -d $reportroot ] && mkdir $reportroot
+
+#
+# Start of script
+#
+{ while IFS=':' read user minage; do
+	
+	echo Archiving $user...
+
+	# create user specific report root
+	userdir=$reportroot/$user/;
+	
+	[ ! -d $userdir ] && mkdir $userdir
+	
+	# output file
+	reportfile=$userdir$user$timestamp.report;
+	
+	# start archiving process
+	imapsync \
+		--host1 mail.velleman.be \
+		--user1 "velleman/BackupExecVer/$user" \
+		--password1 Ce3k4y \
+		--host2 localhost \
+		--user2 cyrus \
+		--password2 Kg963Vx \
+		--sep2 $separator \
+		--minage $minage \
+		--syncinternaldates \
+		--namespace user \
+		--owner $user \
+		--prefixowner \
+		--exclude "Public|Calendar|Contacts|Journal|Tasks" \
+		--skipunread \
+		--silent \
+		--delete \
+		--expunge \
+	> $reportfile
+
+
+	# mail archiving report to owner
+	mail -s "Archive report $user" "$user@velleman.be" < $reportfile
+
+	cat $reportfile
+
+done; } < $1

@@ -1,0 +1,531 @@
+
+RCS file: RCS/imapsync,v
+Working file: imapsync
+head: 1.118
+branch:
+locks: strict
+access list:
+symbolic names:
+keyword substitution: kv
+total revisions: 118;	selected revisions: 118
+description:
+----------------------------
+revision 1.118
+date: 2005/01/17 14:45:25;  author: gilles;  state: Exp;  lines: +10 -8
+--regexmess option can be repeated
+----------------------------
+revision 1.117
+date: 2005/01/16 13:51:49;  author: gilles;  state: Exp;  lines: +17 -11
+Changed get_separator()
+Calling namespace capability if needed
+----------------------------
+revision 1.116
+date: 2005/01/16 01:50:23;  author: gilles;  state: Exp;  lines: +50 -49
+Added --regexmess option
+----------------------------
+revision 1.115
+date: 2005/01/10 00:14:45;  author: gilles;  state: Exp;  lines: +10 -12
+Tried to get flags in one command, but it is too slow.
+----------------------------
+revision 1.114
+date: 2005/01/07 09:58:59;  author: gilles;  state: Exp;  lines: +82 -76
+moved parse_header_msg1
+----------------------------
+revision 1.113
+date: 2005/01/07 07:28:40;  author: gilles;  state: Exp;  lines: +9 -9
+Added conditional --dry actions
+----------------------------
+revision 1.112
+date: 2005/01/04 04:49:43;  author: gilles;  state: Exp;  lines: +19 -18
+acl only if option
+----------------------------
+revision 1.111
+date: 2005/01/04 04:05:07;  author: gilles;  state: Exp;  lines: +9 -13
+Suppressed perl warnings
+----------------------------
+revision 1.110
+date: 2005/01/04 03:56:59;  author: gilles;  state: Exp;  lines: +92 -12
+Better performances
+----------------------------
+revision 1.109
+date: 2005/01/02 00:47:24;  author: gilles;  state: Exp;  lines: +6 -9
+Removed useless lines
+----------------------------
+revision 1.108
+date: 2004/12/29 03:19:48;  author: gilles;  state: Exp;  lines: +8 -7
+--prefix2 applied before --regextrans2
+----------------------------
+revision 1.107
+date: 2004/12/28 23:24:05;  author: gilles;  state: Exp;  lines: +30 -9
+Added option --nosyncacls
+Added synchronization of acls (by default)
+Added --justfolders
+----------------------------
+revision 1.106
+date: 2004/12/28 03:35:00;  author: gilles;  state: Exp;  lines: +9 -8
+If --sep2 or --sep1 is given then it has precedence over the
+separator given by imap namespace.
+----------------------------
+revision 1.105
+date: 2004/12/28 03:32:30;  author: gilles;  state: Exp;  lines: +7 -11
+Removed commented code about separator
+----------------------------
+revision 1.104
+date: 2004/11/13 02:30:24;  author: gilles;  state: Exp;  lines: +7 -6
+Added Worldmail success
+----------------------------
+revision 1.103
+date: 2004/10/19 04:15:27;  author: gilles;  state: Exp;  lines: +9 -11
+Removed search("ALL") from foldersizes code
+----------------------------
+revision 1.102
+date: 2004/10/15 14:41:25;  author: gilles;  state: Exp;  lines: +36 -21
+Add use of fetch_hash() in foldersizes counting.
+----------------------------
+revision 1.101
+date: 2004/10/12 15:17:37;  author: gilles;  state: Exp;  lines: +7 -6
+Added OpenWave
+----------------------------
+revision 1.100
+date: 2004/10/08 00:57:33;  author: gilles;  state: Exp;  lines: +33 -12
+Added time infos
+----------------------------
+revision 1.99
+date: 2004/10/04 18:42:40;  author: gilles;  state: Exp;  lines: +15 -8
+Added explanation about --skipheader option :
+only one regex taken into account.
+----------------------------
+revision 1.98
+date: 2004/09/29 15:49:53;  author: gilles;  state: Exp;  lines: +11 -6
+Ordered message transfer by uid. Thanks to David Alix suggestion.
+----------------------------
+revision 1.97
+date: 2004/09/29 15:00:26;  author: gilles;  state: Exp;  lines: +7 -6
+Success stories : Domino 5.0.6
+----------------------------
+revision 1.96
+date: 2004/07/09 09:08:43;  author: gilles;  state: Exp;  lines: +41 -36
+Rewrote foldersizes using size() instead of new and not
+available everywhere fetch_hash().
+----------------------------
+revision 1.95
+date: 2004/07/08 23:31:53;  author: gilles;  state: Exp;  lines: +44 -6
+Applied --foldersizes patch as is from Reed Sandberg
+----------------------------
+revision 1.94
+date: 2004/06/15 03:42:56;  author: gilles;  state: Exp;  lines: +13 -6
+Added time stat
+----------------------------
+revision 1.93
+date: 2004/06/14 23:13:55;  author: gilles;  state: Exp;  lines: +18 -11
+Added stats about messages transfered and messages skipped
+----------------------------
+revision 1.92
+date: 2004/05/29 02:23:14;  author: gilles;  state: Exp;  lines: +17 -13
+Updated usage()
+----------------------------
+revision 1.91
+date: 2004/04/07 18:51:24;  author: gilles;  state: Exp;  lines: +7 -6
+- Expunging the destination server is commented.
+- Expunge each message deleted message from the source server
+  if --expunge
+----------------------------
+revision 1.90
+date: 2004/04/07 18:14:05;  author: gilles;  state: Exp;  lines: +13 -6
+Added --regextrans2 option
+----------------------------
+revision 1.89
+date: 2004/03/31 17:37:23;  author: gilles;  state: Exp;  lines: +17 -13
+Changed debug output
+----------------------------
+revision 1.88
+date: 2004/03/29 23:33:00;  author: gilles;  state: Exp;  lines: +27 -11
+Added BUGS section about "Multiple copies".
+----------------------------
+revision 1.87
+date: 2004/03/24 00:08:35;  author: gilles;  state: Exp;  lines: +6 -5
+Updated Servers list.
+----------------------------
+revision 1.86
+date: 2004/03/21 23:25:47;  author: gilles;  state: Exp;  lines: +19 -7
+Added --skipheader option
+Added --skipsize   option
+----------------------------
+revision 1.85
+date: 2004/03/13 20:39:10;  author: gilles;  state: Exp;  lines: +7 -6
+Updated pod IMAP SERVERS
+----------------------------
+revision 1.84
+date: 2004/03/13 03:43:34;  author: gilles;  state: Exp;  lines: +8 -7
+Sort also same type headers (like Received)
+----------------------------
+revision 1.83
+date: 2004/03/12 02:29:00;  author: gilles;  state: Exp;  lines: +8 -5
+Do not parse first blanks in headers (dbmail bug, thanks to
+Christophe Labouisse)
+----------------------------
+revision 1.82
+date: 2004/03/12 01:40:27;  author: gilles;  state: Exp;  lines: +6 -6
+removed only
+----------------------------
+revision 1.81
+date: 2004/03/12 01:39:51;  author: gilles;  state: Exp;  lines: +11 -5
+AUTHOR pod section
+----------------------------
+revision 1.80
+date: 2004/03/12 01:11:22;  author: gilles;  state: Exp;  lines: +6 -6
+IMail Win2003
+----------------------------
+revision 1.79
+date: 2004/03/12 01:08:12;  author: gilles;  state: Exp;  lines: +6 -5
+Added IMail 7.15
+----------------------------
+revision 1.78
+date: 2004/03/12 01:04:10;  author: gilles;  state: Exp;  lines: +19 -9
+--timeout option added. Thanks to William Hernandez (fromESS/PR Webmasters)
+----------------------------
+revision 1.77
+date: 2004/03/11 05:33:22;  author: gilles;  state: Exp;  lines: +26 -8
+Better authmd5 stuff
+Added option --noauthmd5
+----------------------------
+revision 1.76
+date: 2004/02/18 21:34:46;  author: gilles;  state: Exp;  lines: +9 -6
+Added mailutil ref
+----------------------------
+revision 1.75
+date: 2004/02/18 14:27:40;  author: gilles;  state: Exp;  lines: +6 -6
+dovecot version
+----------------------------
+revision 1.74
+date: 2004/02/12 03:11:14;  author: gilles;  state: Exp;  lines: +11 -6
+Updated SIMILAR SOFTWARES
+----------------------------
+revision 1.73
+date: 2004/02/12 00:12:46;  author: gilles;  state: Exp;  lines: +11 -5
+www.imap.org
+----------------------------
+revision 1.72
+date: 2004/02/09 15:42:33;  author: gilles;  state: Exp;  lines: +39 -9
+Better MD5 handling
+----------------------------
+revision 1.71
+date: 2004/01/29 04:28:36;  author: gilles;  state: Exp;  lines: +23 -7
+Added statistics about bytes transfered, skipped
+----------------------------
+revision 1.70
+date: 2004/01/29 03:32:01;  author: gilles;  state: Exp;  lines: +9 -5
+Updated "Huge Migration".
+----------------------------
+revision 1.69
+date: 2004/01/29 02:27:41;  author: gilles;  state: Exp;  lines: +45 -16
+Patch from Kaspar Brand as is.
+----------------------------
+revision 1.68
+date: 2004/01/28 03:49:29;  author: gilles;  state: Exp;  lines: +17 -13
+Added "Success stories"
+Sorted "Success stories"
+Added windows note.
+----------------------------
+revision 1.67
+date: 2004/01/28 03:10:24;  author: gilles;  state: Exp;  lines: +6 -6
+Better description for google.
+----------------------------
+revision 1.66
+date: 2004/01/23 20:27:28;  author: gilles;  state: Exp;  lines: +6 -6
+Added IMAP sync words for google response.
+----------------------------
+revision 1.65
+date: 2003/12/24 03:04:34;  author: gilles;  state: Exp;  lines: +20 -7
+Wrote separator_invert()
+Use separator_invert() to transform separators
+----------------------------
+revision 1.64
+date: 2003/12/23 19:45:46;  author: gilles;  state: Exp;  lines: +5 -8
+Removed auth capability debug
+----------------------------
+revision 1.63
+date: 2003/12/23 19:44:47;  author: gilles;  state: Exp;  lines: +7 -6
+One line only for --version
+----------------------------
+revision 1.62
+date: 2003/12/23 19:28:12;  author: gilles;  state: Exp;  lines: +6 -5
+Added ref pop2imap
+----------------------------
+revision 1.61
+date: 2003/12/23 19:23:07;  author: gilles;  state: Exp;  lines: +11 -6
+Updated Success stories
+----------------------------
+revision 1.60
+date: 2003/12/23 18:21:44;  author: gilles;  state: Exp;  lines: +8 -8
+Try separator()
+----------------------------
+revision 1.59
+date: 2003/12/23 18:19:24;  author: gilles;  state: Exp;  lines: +34 -16
+Added MD5 auth
+----------------------------
+revision 1.58
+date: 2003/12/23 17:26:45;  author: gilles;  state: Exp;  lines: +44 -27
+Preparation to MD5 auth
+----------------------------
+revision 1.57
+date: 2003/12/23 03:04:16;  author: gilles;  state: Exp;  lines: +14 -6
+Prepared code for separator() use.
+Added --justconnect option.
+----------------------------
+revision 1.56
+date: 2003/12/13 19:38:33;  author: gilles;  state: Exp;  lines: +7 -7
+Removed tha bad help message about nested folders and
+--folder option
+----------------------------
+revision 1.55
+date: 2003/12/13 18:16:56;  author: gilles;  state: Exp;  lines: +30 -15
+Better subscribe behavior
+----------------------------
+revision 1.54
+date: 2003/12/12 18:13:01;  author: gilles;  state: Exp;  lines: +7 -6
+Updated "Success stories".
+----------------------------
+revision 1.53
+date: 2003/12/12 17:34:45;  author: gilles;  state: Exp;  lines: +17 -6
+Added comments.
+Added subscribe code.
+----------------------------
+revision 1.52
+date: 2003/12/12 17:16:51;  author: gilles;  state: Exp;  lines: +12 -4
+Use join() for the banner (less ugly).
+----------------------------
+revision 1.51
+date: 2003/12/12 17:12:39;  author: gilles;  state: Exp;  lines: +25 -9
+Updated the INSTALL pod doc.
+Prepared the --subscribe option.
+----------------------------
+revision 1.50
+date: 2003/12/01 16:32:15;  author: gilles;  state: Exp;  lines: +6 -4
+Added Mail::IMAPClient::VERSION
+----------------------------
+revision 1.49
+date: 2003/12/01 16:19:46;  author: gilles;  state: Exp;  lines: +6 -6
+Updated success stories.
+----------------------------
+revision 1.48
+date: 2003/11/21 04:23:10;  author: gilles;  state: Exp;  lines: +26 -4
+Added "HUGE MIGRATION" pod section. (Thanks
+        Tommi Lätti
+----------------------------
+revision 1.47
+date: 2003/11/21 03:15:31;  author: gilles;  state: Exp;  lines: +19 -4
+Added a SECURITY pod doc section.
+----------------------------
+revision 1.46
+date: 2003/11/21 02:52:37;  author: gilles;  state: Exp;  lines: +6 -4
+Documented --subscribed option in usage()
+Add GPL link
+----------------------------
+revision 1.45
+date: 2003/11/21 02:42:49;  author: gilles;  state: Exp;  lines: +28 -8
+Added usage of sysexists constants.
+Exit in error if a problem occurs with options.
+Added --subscribed option
+----------------------------
+revision 1.44
+date: 2003/11/11 18:01:49;  author: gilles;  state: Exp;  lines: +5 -5
+Fixed get_separator call bug for "to" server.
+Thanks Eric Yung.
+----------------------------
+revision 1.43
+date: 2003/11/11 02:18:45;  author: gilles;  state: Exp;  lines: +35 -8
+Added --sep1 and --sep2 options in case NAMESPACE can not be
+used
+Wrote get_separator() function.
+----------------------------
+revision 1.42
+date: 2003/10/20 22:56:57;  author: gilles;  state: Exp;  lines: +27 -16
+Added --syncinternaldates option
+----------------------------
+revision 1.41
+date: 2003/10/20 19:19:52;  author: gilles;  state: Exp;  lines: +9 -4
+RFC 2060: \Recent can not be altered by the client.
+Thanks to Tomasz Orzechowski <tomek AT lj.pl>
+----------------------------
+revision 1.40
+date: 2003/10/17 01:34:59;  author: gilles;  state: Exp;  lines: +5 -5
+Added condition to add prefix2
+----------------------------
+revision 1.39
+date: 2003/10/17 01:26:20;  author: gilles;  state: Exp;  lines: +4 -14
+Removed commented code
+----------------------------
+revision 1.38
+date: 2003/10/17 01:25:40;  author: gilles;  state: Exp;  lines: +12 -7
+Added --prefix2 option for the INBOX. namespace problem
+with cyrus imap servers.
+----------------------------
+revision 1.37
+date: 2003/10/16 01:37:52;  author: gilles;  state: Exp;  lines: +9 -8
+Added a loop in case there is several identical key header
+----------------------------
+revision 1.36
+date: 2003/10/16 01:23:51;  author: gilles;  state: Exp;  lines: +4 -38
+Removed commented code in parse section.
+----------------------------
+revision 1.35
+date: 2003/10/16 01:22:52;  author: gilles;  state: Exp;  lines: +20 -19
+Use of parse_header_msg() in "to" server
+----------------------------
+revision 1.34
+date: 2003/10/16 01:18:07;  author: gilles;  state: Exp;  lines: +49 -24
+Wrote parse_header_msg()
+Use of parse_header_msg for "from" server.
+----------------------------
+revision 1.33
+date: 2003/10/16 00:47:43;  author: gilles;  state: Exp;  lines: +6 -6
+Added prefix in debug output for headers
+----------------------------
+revision 1.32
+date: 2003/10/16 00:36:17;  author: gilles;  state: Exp;  lines: +17 -5
+Added code to check internal dates
+Commented code about internal dates
+----------------------------
+revision 1.31
+date: 2003/08/28 16:07:28;  author: gilles;  state: Exp;  lines: +5 -5
+Fixed bug converting separators
+----------------------------
+revision 1.30
+date: 2003/08/27 16:40:38;  author: gilles;  state: Exp;  lines: +9 -5
+Added output separators
+Fixed bad output fot "To folders"
+----------------------------
+revision 1.29
+date: 2003/08/24 02:01:28;  author: gilles;  state: Exp;  lines: +6 -4
+Updated doc about fixed flags first time bug.
+----------------------------
+revision 1.28
+date: 2003/08/24 01:55:25;  author: gilles;  state: Exp;  lines: +8 -30
+Set the flags using append_strings() instead of store()
+Flags are well set since the first run now.
+----------------------------
+revision 1.27
+date: 2003/08/23 14:40:57;  author: gilles;  state: Exp;  lines: +4 -10
+Removed unused code
+----------------------------
+revision 1.26
+date: 2003/08/23 14:36:58;  author: gilles;  state: Exp;  lines: +18 -11
+Updated doc with imap servers, freshmeat url
+----------------------------
+revision 1.25
+date: 2003/08/23 01:44:33;  author: gilles;  state: Exp;  lines: +18 -12
+Fixed pb with no UIDPLUS and flags
+----------------------------
+revision 1.24
+date: 2003/08/23 00:05:57;  author: gilles;  state: Exp;  lines: +13 -5
+Added server software output
+Added server capability output
+----------------------------
+revision 1.23
+date: 2003/08/22 21:55:01;  author: gilles;  state: Exp;  lines: +37 -8
+Added code to better sync flags
+----------------------------
+revision 1.22
+date: 2003/08/22 17:17:18;  author: gilles;  state: Exp;  lines: +22 -17
+Added code to underdstand why Daniele can't create folders
+----------------------------
+revision 1.21
+date: 2003/08/22 16:25:07;  author: gilles;  state: Exp;  lines: +4 -9
+Removed commented code adding INBOX. prefix
+----------------------------
+revision 1.20
+date: 2003/08/21 16:31:53;  author: gilles;  state: Exp;  lines: +6 -5
+Fixed banner output. Must be after getoptions because of --version
+----------------------------
+revision 1.19
+date: 2003/08/21 16:18:32;  author: gilles;  state: Exp;  lines: +11 -8
+Added code and comment to understand why message uid was not printed
+ Solution : some imap server don't have UIDPLIS Capability
+----------------------------
+revision 1.18
+date: 2003/08/21 14:37:45;  author: gilles;  state: Exp;  lines: +5 -5
+Removed unuseful param in $from->folders call
+----------------------------
+revision 1.17
+date: 2003/08/21 13:49:05;  author: gilles;  state: Exp;  lines: +5 -4
+Fixed banner
+----------------------------
+revision 1.16
+date: 2003/08/21 13:47:14;  author: gilles;  state: Exp;  lines: +12 -11
+Added imapxfer url, thanks to Daniele Frijia.
+Added [] to see blank caracter in folder names.
+Added a banner with imapsync version.
+----------------------------
+revision 1.15
+date: 2003/07/17 12:22:23;  author: gilles;  state: Exp;  lines: +4 -4
+Added imap debug mode to server2
+----------------------------
+revision 1.14
+date: 2003/07/17 11:58:56;  author: gilles;  state: Exp;  lines: +14 -12
+- Fixed port2 variable.
+  Thanks again Patrick C. F. Ernzer
+----------------------------
+revision 1.13
+date: 2003/07/16 17:28:59;  author: gilles;  state: Exp;  lines: +6 -3
+- fix "you forgot to honour the --port option"
+  Thanks to Patrick C. F. Ernzer
+----------------------------
+revision 1.12
+date: 2003/07/07 20:19:58;  author: gilles;  state: Exp;  lines: +20 -4
+Updated documentation :
+ - Added IMAP SERVERS section (Success and bad stories).
+ - Updated SIMILAR SOFTWARES section.
+----------------------------
+revision 1.11
+date: 2003/07/04 23:32:23;  author: gilles;  state: Exp;  lines: +7 -5
+- use of namespace separator,
+  Thanks to Sebastien Namèche.
+----------------------------
+revision 1.10
+date: 2003/05/05 22:37:48;  author: gilles;  state: Exp;  lines: +5 -5
+Updated --folder documentation.
+----------------------------
+revision 1.9
+date: 2003/05/05 22:33:50;  author: gilles;  state: Exp;  lines: +8 -7
+Commented INBOX prefix addition (cyrus "buggy" namespace)
+----------------------------
+revision 1.8
+date: 2003/05/05 21:05:14;  author: gilles;  state: Exp;  lines: +20 -4
+When folders are given with the --folder option then nested are
+also taken into account.
+----------------------------
+revision 1.7
+date: 2003/03/15 03:40:54;  author: gilles;  state: Exp;  lines: +19 -9
+Added documentation.
+----------------------------
+revision 1.6
+date: 2003/03/14 02:17:24;  author: gilles;  state: Exp;  lines: +5 -3
+Added positive exit if errors occurred.
+----------------------------
+revision 1.5
+date: 2003/03/14 01:20:37;  author: gilles;  state: Exp;  lines: +14 -6
+Better debug output.
+----------------------------
+revision 1.4
+date: 2003/03/14 01:01:08;  author: gilles;  state: Exp;  lines: +143 -15
+Added documentation.
+Added --folder option.
+Added error counter.
+----------------------------
+revision 1.3
+date: 2003/03/12 23:19:58;  author: gilles;  state: Exp;  lines: +276 -166
+Adapted from transfert-bal-verify.pl
+Added usage()
+Changed variable names.
+Added get_options()
+Added option controls.
+----------------------------
+revision 1.2
+date: 2001/07/29 23:27:52;  author: gilles;  state: Exp;  lines: +7 -4
+8bit  -> X
+----------------------------
+revision 1.1
+date: 2001/07/29 22:34:01;  author: gilles;  state: Exp;
+Initial revision
+=============================================================================

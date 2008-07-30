@@ -1,0 +1,243 @@
+NAME
+    imapsync - IMAP synchronization, copy or migration tool. Synchronize
+    mailboxes between two imap servers. Good at IMAP migration.
+
+    $Revision: 1.118 $
+
+INSTALL
+     imapsync works fine under any Unix OS.
+     imapsync works fine under Windows 2000 (at least) and ActiveState's 5.8 Perl
+
+     Get imapsync at
+     http://www.linux-france.org/prj/imapsync/dist/
+
+     You'll find a compressed tarball called imapsync-x.xx.tgz
+     where x.xx is the version number. Untar the tarball where
+     you want :
+
+     tar xzvf  imapsync-x.xx.tgz
+
+     Go into the directory imapsync-x.xx and read the INSTALL
+     file.
+
+     The freshmeat record is http://freshmeat.net/projects/imapsync/
+
+SYNOPSIS
+      imapsync [options]
+
+      imapsync --help
+      imapsync
+
+      imapsync [--host1 server1]  [--port1 <num>]
+               [--user1 <string>] [--passfile1 <string>] 
+               [--host2 server2]  [--port2 <num>]
+               [--user2 <string>] [--passfile2 <string>] 
+               [--folder <string> --folder <string> ...]
+               [--include <regex>] [--exclude <regex>]
+               [--prefix2 <string>]
+               [--sep1 <char>]
+               [--sep2 <char>]
+               [--syncinternaldates]
+               [--maxsize <int>]
+               [--maxage <int>]
+               [--skipheader <regex>]
+               [--skipsize]
+               [--delete] [--expunge]
+               [--subscribed] [--subscribe]
+               [--foldersizes]
+               [--dry]
+               [--debug] [--debugimap]
+               [--timeout <int>]
+               [--version] [--help]
+  
+DESCRIPTION
+    The command imapsync is a tool allowing incremental and recursive imap
+    transfer from one mailbox to another.
+
+    We sometimes need to transfer mailboxes from one imap server to another.
+    This is called migration.
+
+    imapsync is the adequate tool because it reduces the amount of data
+    transfered by not transfering a given message if it is already on both
+    sides. Same headers, same message size and the transfert is done only
+    once. All flags are preserved, unread will stay unread, read will stay
+    read, deleted will stay deleted. You can stop the transfert at any time
+    and restart it later, imapsync is adapted to a bad connection.
+
+    You can decide to delete the messages from the source mailbox after a
+    successful transfert (it is a good feature when migrating). In that
+    case, use the --delete option, and run imapsync again with the --expunge
+    option.
+
+    You can also just synchronize a mailbox A from another mailbox B in case
+    you just want to keep a "live" copy of B in A.
+
+OPTIONS
+    Invoke: imapsync --help
+
+HISTORY
+    I wrote imapsync because an enterprise (basystemes) paid me to install a
+    new imap server without loosing huge old mailboxes located on a far away
+    remote imap server accessible by a low bandwith link. The tool imapcp
+    (written in python) could not help me because I had to verify every
+    mailbox was well transfered and delete it after a good transfert.
+    imapsync started its life being a copy_folder.pl patch. The tool
+    copy_folder.pl comes from the Mail-IMAPClient-2.1.3 perl module tarball
+    source (in the examples/ directory of the tarball).
+
+EXAMPLES
+    While working on imapsync parameters please run imapsync in dry mode (no
+    modification induced) with the --dry option. Nothing bad can be done
+    this way.
+
+    To synchronize the imap account "buddy" on host "imap.src.fr" to the
+    imap account "max" on host "imap.dest.fr" (the passwords are located in
+    too files "/etc/secret1" for "buddy", "/etc/secret2" for "max") :
+
+     imapsync --host1 imap.src.fr  --user1 buddy --passfile1 /etc/secret1 \
+              --host2 imap.dest.fr --user2 max   --passfile2 /etc/secret2
+
+    Then, you will have buddy's mailbox updated from max's mailbox.
+
+SECURITY
+    You can use --password1 instead of --passfile1 to give the password but
+    it is dangerous because any user on your host can see the password by
+    using the 'ps auxwwww' command. Using a variable (like $PASSWORD1) is
+    also dangerous because of the 'ps auxwwwwe' command. So, saving the
+    password in a well protected file (600 or rw-------) is the best
+    solution.
+
+    imasync is not protected against sniffers on the network so the
+    passwords are in plain text.
+
+EXIT STATUS
+    imapsync will exit with a 0 status (return code) if everything went
+    good. Otherwise, it exits with a non-zero status.
+
+    So if you have a buggy internet connection, you can use this loop in a
+    Bourne shell:
+
+            while ! imapsync ...; do 
+                  echo imapsync not complete
+            done
+
+AUTHOR
+    Gilles LAMIRAL lamiral@linux-france.org
+
+LICENSE
+    imapsync is free, gratis and open source software cover by the GNU
+    General Public License. See the GPL file included in the distribution or
+    the web site http://www.gnu.org/licenses/licenses.html
+
+BUGS
+    No known serious bug.
+
+    Multiple copies: Multiple copies of the emails on the destination
+    server. Some IMAP servers (Domino for example) add some headers for each
+    message transfered. The message is transfered again and again each time
+    you run imapsync. This is bad of course. The explanation is that
+    imapsync considers the message is not the same since headers have
+    changed (one line added) and size too (the header part). You can look at
+    the headers found by imapsync by using the --debug option (and search
+    for the message on both part). The way to avoid this problem is by using
+    options --skipheader and --skipsize, like this (avoid headers beginning
+    whith X-):
+
+     imapsync ... --skipheader '^X-' --skipsize
+
+    You can use --skipheader only one time; if you need to skip several
+    different headers use the "or" perl regex caracter which is "|".
+    Example:
+
+     imapsync ... --skipheader '^X-|^Status|^Bcc'
+
+    Flags : with some IMAP servers the flags are not very well copied the
+    first time. Run imapsync twice if you want the flags set correctly.
+    (fixed since 1.28 release but wait for a time before removing those
+    lines)
+
+    Report any bugs to the author: lamiral@linux-france.org
+
+IMAP SERVERS
+    Success stories reported (softwares in alphabetic order) :
+
+     - BincImap 1.2.3
+     - CommunicatePro server (Redhat 8.0)
+     - Courier IMAP 1.5.1, 2.2.0, 2.1.1
+     - Critical Path (7.0.020)
+     - Cyrus IMAP 1.5, 1.6, 2.1, 2.1.15, 2.1.16, 2.2.1, Cyrus 2.2.2-BETA.
+     - DBMail 1.2.1
+     - Dovecot 0.99.10.4
+     - Domino (Notes) 6.5, 5.0.6
+     - iPlanet Messaging server 4.15, 5.1
+     - IMail 7.15 (Ipswitch/Win2003), 8.12
+     - MS Exchange Server 5.5
+     - Netscape Mail Server 3.6 (Wintel !)
+     - OpenWave
+     - Qualcomm Worldmail (NT)
+     - SunONE Messaging server 5.2, 6.0 (SUN JES - Java Enterprise System)
+     - UW-imap servers (imap-2000b) rijkkramer IMAP4rev1 2000.287
+       (RedHat uses UW like 2003.338rh)
+     - UW - QMail v2.1
+
+    Please report to the author any success or bad story with imapsync and
+    don't forget to mention the IMAP server software names and version on
+    both sides. This will help future users. To help the author maintaining
+    this section report the two lines at the begining of the output if they
+    are useful to know the softwares. Example:
+
+     From software :* OK louloutte Cyrus IMAP4 v1.5.19 server ready
+     To   software :* OK Courier-IMAP ready
+
+    You can use option --justconnect to get those lines.
+
+    And please rate imapsync at http://freshmeat.net/projects/imapsync/
+
+HUGE MIGRATION
+    Have a special attention on options --subscribed --subscribe --delete
+    --expunge --maxage --maxsize
+
+    If you have many mailboxes to migrate think about a little shell
+    program. Write a file called file.csv (for example) containing users and
+    passwords. The separator used in this example is ';'
+
+    The file.csv file content is :
+
+    user0001;password0001;user0002;password0002
+    user0011;password0011;user0012;password0012 ...
+
+    And the shell program is just :
+
+    { while IFS=';' read u1 p1 u2 p2; do imapsync --user1 $u1 --password1
+    $p1 --user2 $u2 --password2 $p2 ... done ; } < file.csv
+
+    Welcome in shell programming !
+
+Hacking
+    Feel free to hack imapsync as the GPL Licence permits it.
+
+Links
+    Entries for imapsync: http://www.imap.org/products/showall.php
+
+SIMILAR SOFTWARES
+      offlineimap : http://gopher.quux.org:70/devel/offlineimap/
+      mailsync    : http://mailsync.sourceforge.net/
+      imapxfer    : http://www.washington.edu/imap/
+                    part of the imap-utils from UW.
+      mailutil    : replace imapxfer in 
+                    part of the imap-utils from UW.
+                    http://www.gsp.com/cgi-bin/man.cgi?topic=mailutil
+      imaprepl    : http://www.bl0rg.net/software/
+                    http://freshmeat.net/projects/imap-repl/
+      imap_migrate: http://freshmeat.net/projects/imapmigration/
+      pop2imap    : http://www.linux-france.org/prj/pop2imap/
+
+    Feedback (good or bad) will be always welcome.
+
+AUTHOR
+    Gilles LAMIRAL earn his living writing, installing, configuring and
+    teaching free open and gratis softwares. Don't hesitate to pay him for
+    that services.
+
+    $Id: imapsync,v 1.118 2005/01/17 14:45:25 gilles Exp $
+
