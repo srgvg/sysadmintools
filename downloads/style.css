@@ -1,0 +1,16 @@
+body, table, input {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 10pt;
+}
+a {
+    text-decoration: underline;
+    color: blue;
+}
+.msg {
+    color: blue;
+    font-weight: bold;
+    border: silver 1px solid;
+    background-color: #F0F0F0;
+    padding: 3px;
+}
+
