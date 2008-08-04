@@ -26,7 +26,7 @@ chmod($target_file, $file_mask); /* cannot be writable */
 
 $download_url = $download_root . $uid . '/' . $file;
 
-$msg = "Download link:<br /> <textarea rows='5' cols='60'>{$download_url}</textarea> <p>Copy this link into an email or other medium.</p>";
+$msg = "Download link:<br /> <textarea rows='2' cols='120'>{$download_url}</textarea> <p>Copy this link into an email or other medium.</p>";
 
 } else{
 $msg = 'There was an error uploading the file.';
