@@ -42,7 +42,7 @@ if $(grep -q $(readlink -f /dev/disk/by-uuid/$usb) /etc/mtab )
 fi
 
 ## execute command on mounted disk here
-eval $*
+eval $* && echo Command returns success || echo Command returns error
 
 ## umount afterwards
 if $(umount /dev/disk/by-uuid/$usb)
