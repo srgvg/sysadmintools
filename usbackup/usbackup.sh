@@ -1,8 +1,11 @@
 #!/bin/bash
 
+##################################################################
+### Variabels, should go into /etc/usbackup.conf something #####
 # sum up UUID's space separated
 uuids="40f27d2b-ec3b-48c7-a14a-c660563ee940 69b98ce2-dd00-411a-9d63-2083a18734bf"
 mountpoint="/mnt/usbackup"
+##################################################################
 
 count=0
 
@@ -43,7 +46,7 @@ eval $*
 
 ## umount afterwards
 if $(umount /dev/disk/by-uuid/$usb)
-        then true
+        then echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was unmounted.
         else echo Unmounting disk failed at $(date).
 fi
 
