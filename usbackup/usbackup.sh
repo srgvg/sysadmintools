@@ -19,14 +19,14 @@ for uuid in $uuids
 case count in 
 	0)
 		echo "Error: no defined disk available."
-		exit
+		exit 1
 		;;
 	1)
 		true
 		;;
 	*)
 		# put next line in comment if you just want to use the last detected disk from more than one available
-		# echo "Error: more than one disk available." ; exit
+		# echo "Error: more than one disk available." ; exit 1
 		;;
 esac
 
@@ -38,7 +38,7 @@ if $(grep -q $(readlink -f /dev/disk/by-uuid/$usb) /etc/mtab )
 		echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was already mounted.
 		elif $(mount /dev/disk/by-uuid/$usb $mountpoint)
 			then echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was mounted.
-	else echo Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date). ; exit
+	else echo Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date). ; exit 1
 fi
 
 ## execute command on mounted disk here
@@ -47,6 +47,6 @@ eval $*
 ## umount afterwards
 if $(umount /dev/disk/by-uuid/$usb)
         then echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was unmounted.
-        else echo Unmounting disk failed at $(date).
+        else echo Unmounting disk failed at $(date).; exit 1
 fi
 
