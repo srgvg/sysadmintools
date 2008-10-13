@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # sum up UUID's space separated
-uuids="cd361b86-4d33-472c-ba9c-ecb40e05ac89 56f3ff13-0103-4f19-a333-70c0bf810b08"
+uuids="40f27d2b-ec3b-48c7-a14a-c660563ee940 69b98ce2-dd00-411a-9d63-2083a18734bf"
+mountpoint="/mnt/usbackup"
+
 count=0
 
 for uuid in $uuids 
@@ -31,13 +33,13 @@ esac
 if $(grep -q $(readlink -f /dev/disk/by-uuid/$usb) /etc/mtab )
 	then 
 		echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was already mounted.
-		elif $(mount /dev/disk/by-uuid/$usb)
+		elif $(mount /dev/disk/by-uuid/$usb $mountpoint)
 			then echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was mounted.
 	else echo Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date). ; exit
 fi
 
 ## execute command on mounted disk here
-exit
+eval $*
 
 ## umount afterwards
 if $(umount /dev/disk/by-uuid/$usb)
