@@ -1,13 +1,42 @@
 #!/bin/bash
 
 ##################################################################
-### Variabels, should go into /etc/usbackup.conf something #####
-# sum up UUID's space separated
+### Parameter defaults #####
+# sum up UUID's for different usb mount points, space separated
 uuids="40f27d2b-ec3b-48c7-a14a-c660563ee940 69b98ce2-dd00-411a-9d63-2083a18734bf"
 mountpoint="/mnt/usbackup"
+snapshot_root="/srv/rsnapshot"
+# verbosity for STDOUT only, errors are allways send to STDERR; 
+verbose="0"
+# internal parameters
+config="usbackup.conf"
+MESSAGE_PREFIX="USBACKUP"
+log_tag=$0
+log_facility=syslog
+count=0
+
 ##################################################################
 
-count=0
+say() {
+        MESSAGE="$1"
+        TIMESTAMP=$(date +"%F %T")
+        if [ $verbose != "0" ] ; then echo -e "$TIMESTAMP $MESSAGE_PREFIX $MESSAGE" ; fi
+        logger -t $log_tag -p $log_facility.info "$MESSAGE"
+        }
+
+error ()  {
+        MESSAGE="$1"
+        TIMESTAMP=$(date +"%F %T")
+        echo -e $TIMESTAMP $MESSAGE >&2
+        logger -t $log_tag -p $log_facility.err "$MESSAGE"
+        }
+
+if   [ -f $(dirname $0)/$config ]
+then source $(dirname $0)/$config
+elif [ -f /etc/$config ] 
+then source /etc/$config
+else error "Please create  $(dirname $0)/$config OR /etc/$config"; exit
+fi
 
 for uuid in $uuids 
 	do
@@ -16,37 +45,41 @@ for uuid in $uuids
 		fi
 	done
 
-case count in 
+case $count in 
 	0)
-		echo "Error: no defined disk available."
+		error "Error: no defined disk available."
 		exit 1
 		;;
 	1)
 		true
 		;;
 	*)
-		# put next line in comment if you just want to use the last detected disk from more than one available
-		# echo "Error: more than one disk available." ; exit 1
+		error "Error: more than one disk available."
+		exit 1
 		;;
 esac
 
-# $usb hold the uuid of the disk we want to mount
+# $usb holds the uuid of the (last) disk we want to mount
 # we check if it is already mounted, and if not, we mount it
 
+say "Mounting disk /dev/disk/by-uuid/$usb = $(readlink -f /dev/disk/by-uuid/$usb)"
 if $(grep -q $(readlink -f /dev/disk/by-uuid/$usb) /etc/mtab )
-	then 
-		echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was already mounted.
-		elif $(mount /dev/disk/by-uuid/$usb $mountpoint)
-			then echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was mounted.
-	else echo Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date). ; exit 1
+then error "Disk $(readlink -f /dev/disk/by-uuid/$usb) was already mounted."
+elif $(mount /dev/disk/by-uuid/$usb $mountpoint)
+then say "Disk $(readlink -f /dev/disk/by-uuid/$usb) was mounted."
+else error "Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date)." ; exit 1
 fi
 
 ## execute command on mounted disk here
-eval $* && echo Command returns success || echo Command returns error
+eval $* && say "Command $* -- returns success" || error "Command returns error"
+
+# to sync rsnapshots the command could be
+# rsync -aH --delete --numeric-ids --relative $snapshot_root/ $mountpoint/rsnapshot/
+
 
 ## umount afterwards
 if $(umount /dev/disk/by-uuid/$usb)
-        then echo Disk $(readlink -f /dev/disk/by-uuid/$usb) was unmounted.
-        else echo Unmounting disk failed at $(date).; exit 1
+        then say "Disk $(readlink -f /dev/disk/by-uuid/$usb) was unmounted."
+        else error "Unmounting disk failed at $(date)."; exit 1
 fi
 
