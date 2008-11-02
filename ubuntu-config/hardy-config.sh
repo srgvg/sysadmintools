@@ -32,5 +32,7 @@ fc-cache
 # tar -xvzf install_flash_player_9_linux.tar.gz
 # sudo install_flash_player_9_linux/flashplayer-installer
 
+#set default paper size
+dpkg-reconfigure libpaper1
 
 
