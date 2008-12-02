@@ -83,3 +83,6 @@ if $(umount /dev/disk/by-uuid/$usb)
         else error "Unmounting disk failed at $(date)."; exit 1
 fi
 
+## fsck usb disk
+#/sbin/e2fsck -p /dev/disk/by-uuid/$usb >/dev/null
+
