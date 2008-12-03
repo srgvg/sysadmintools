@@ -1,4 +1,3 @@
-#!/bin/bash
 
 ##############################################################################
 # backup_mysql.sh
@@ -17,27 +16,30 @@
 # rsnapshot handles everything else.
 ##############################################################################
 
-MYSQL_DATA_DIR=$(grep datadir /etc/mysql/my.cnf | sed -e "s/.*\=//" -e "s/^\ //" )
-rtDB="rtdb"
-rtMainTables="ACL Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers \
-Groups Links ObjectCustomFieldValues ObjectCustomFields Principals Queues ScripActions \
-ScripConditions Scrips Templates Tickets Transactions Users sessions"
-
 REMOTEHOST="$1"
-
 if [ ! $REMOTEHOST = "" ]; then REMOTECOMMAND="ssh $REMOTEHOST"; fi
+
+MYSQL_DATA_DIR=$( $REMOTECOMMAND grep datadir /etc/mysql/my.cnf | sed -e "s/.*\=//" -e "s/^\ //" )
+#rtDB="rtdb"
+#rtMainTables="ACL Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers \
+#Groups Links ObjectCustomFieldValues ObjectCustomFields Principals Queues ScripActions \
+#ScripConditions Scrips Templates Tickets Transactions Users sessions"
 
 
 # backup the databases
 
-for db in $( $REMOTECOMMAND find $MYSQL_DATA_DIR/ -type d | xargs -n1 basename);
+DATABASES=$( $REMOTECOMMAND find $MYSQL_DATA_DIR/ -type d | xargs -n1 basename)
+echo $DATABASES
+
+for db in $DATABASES
     do
-    if [ $db == $rtDB ]
-	then TABLES="$rtMainTables"
-	# do the $rtDB Attachment backup
-	$REMOTECOMMAND mysqldump $rtDB Attachments --opt --default-character-set=binary --add-drop-database --add-drop-table --allow-keywords --add-locks -q > $rtDB-attachmentssql
-	else TABLES=""
-    fi
+echo Backup = $db
+#    if [ $db == $rtDB ]
+#       then TABLES="$rtMainTables"
+#       # do the $rtDB Attachment backup
+#       $REMOTECOMMAND mysqldump $rtDB Attachments --opt --default-character-set=binary --add-drop-database --add-drop-table --allow-keywords --add-locks -q > $rtDB-attachmentssql
+#       else TABLES=""
+#    fi
     $REMOTECOMMAND mysqldump $db $TABLES --opt --lock-all-tables --add-drop-database --add-drop-table --add-locks --allow-keywords  -q > $db.sql
 
     # make the backup readable only by root
