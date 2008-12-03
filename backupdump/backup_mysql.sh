@@ -17,30 +17,33 @@
 # rsnapshot handles everything else.
 ##############################################################################
 
-MYSQL_DATA_DIR=$(grep datadir /etc/mysql/my.cnf | sed -e "s/.*\=//")
+MYSQL_DATA_DIR=$(grep datadir /etc/mysql/my.cnf | sed -e "s/.*\=//" -e "s/^\ //" )
 rtDB="rtdb"
 rtMainTables="ACL Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers \
 Groups Links ObjectCustomFieldValues ObjectCustomFields Principals Queues ScripActions \
 ScripConditions Scrips Templates Tickets Transactions Users sessions"
 
+REMOTEHOST=""
 
-# backup the database
-#/usr/bin/mysqldump -uroot --all-databases > mysqldump_all_databases.sql
+if [ ! $REMOTEHOST = "" ]; then REMOTECOMMAND="ssh $REMOTEHOST"; fi
 
-for db in $(find $MYSQL_DATA_DIR/ -type d | sed -e "s/\/var\/lib\/mysql\///");
+
+# backup the databases
+
+for db in $( $REMOTECOMMAND find $MYSQL_DATA_DIR/ -type d | xargs -n1 basename);
     do
     if [ $db == $rtDB ]
 	then TABLES="$rtMainTables"
+	# do the $rtDB Attachment backup
+	$REMOTECOMMAND mysqldump $rtDB Attachments --opt --default-character-set=binary --add-drop-database --add-drop-table --allow-keywords --add-locks -q > $rtDB-attachmentssql
 	else TABLES=""
     fi
-    mysqldump -uroot $db --opt $TABLES -a --lock-all-tables --add-drop-table --add-locks --allow-keywords  -q > $db.sql
+    $REMOTECOMMAND mysqldump $db $TABLES --opt --lock-all-tables --add-drop-database --add-drop-table --add-locks --allow-keywords  -q > $db.sql
 
     # make the backup readable only by root
     /bin/chmod 600 $db.sql
 done
 
-# do the $rtDB Attachment backup
-mysqldump $rtDB --opt --default-character-set=binary Attachments -a --add-drop-table --allow-keywords --add-locks -q > $rtDB-attachments.sql
 
 # make the backup readable only by root
 chown root:root *.sql
