@@ -29,11 +29,9 @@ MYSQL_DATA_DIR=$( $REMOTECOMMAND grep datadir /etc/mysql/my.cnf | sed -e "s/.*\=
 # backup the databases
 
 DATABASES=$( $REMOTECOMMAND find $MYSQL_DATA_DIR/ -type d | xargs -n1 basename)
-echo $DATABASES
 
 for db in $DATABASES
     do
-echo Backup = $db
 #    if [ $db == $rtDB ]
 #       then TABLES="$rtMainTables"
 #       # do the $rtDB Attachment backup
