@@ -23,7 +23,7 @@ rtMainTables="ACL Attributes CachedGroupMembers CustomFieldValues CustomFields G
 Groups Links ObjectCustomFieldValues ObjectCustomFields Principals Queues ScripActions \
 ScripConditions Scrips Templates Tickets Transactions Users sessions"
 
-REMOTEHOST=""
+REMOTEHOST="$1"
 
 if [ ! $REMOTEHOST = "" ]; then REMOTECOMMAND="ssh $REMOTEHOST"; fi
 
