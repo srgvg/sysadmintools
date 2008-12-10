@@ -5,7 +5,7 @@
 # sum up UUID's for different usb mount points, space separated
 uuids="40f27d2b-ec3b-48c7-a14a-c660563ee940 69b98ce2-dd00-411a-9d63-2083a18734bf"
 mountpoint="/mnt/usbackup"
-snapshot_root="/srv/rsnapshot"
+backup_root="/srv/rsnapshot"
 # verbosity for STDOUT only, errors are allways send to STDERR; 
 verbose="0"
 # internal parameters
@@ -70,12 +70,13 @@ then say "Disk $(readlink -f /dev/disk/by-uuid/$usb) was mounted."
 else error "Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date)." ; exit 1
 fi
 
-## execute command on mounted disk here
-eval $* && say "Command $* -- returns success" || error "Command returns error"
 
-# to sync rsnapshots the command could be
-# rsync -aH --delete --numeric-ids --relative $snapshot_root/ $mountpoint/rsnapshot/
-
+if [ $* = "" ]
+        then 	# sync backup_root to usb
+	rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/
+	else 	# execute command in parameters
+	eval $* && say "Command $* -- returns success" || error "Command returns error"
+fi
 
 ## umount afterwards
 if $(umount /dev/disk/by-uuid/$usb)
@@ -84,5 +85,5 @@ if $(umount /dev/disk/by-uuid/$usb)
 fi
 
 ## fsck usb disk
-#/sbin/e2fsck -p /dev/disk/by-uuid/$usb >/dev/null
+/sbin/e2fsck -p /dev/disk/by-uuid/$usb >/dev/null
 
