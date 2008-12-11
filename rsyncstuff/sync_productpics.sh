@@ -12,5 +12,5 @@ sed -i s@^@"+ "@ "$dst_dir/$prod_list"
 echo "+ */" >> "$dst_dir/$prod_list"
 echo "- *" >> "$dst_dir/$prod_list"
 
-rsync -az --exclude-from="$dst_dir/$prod_list" "$src_host:$src_dir/" "$dst_dir" 
+rsync -az --delete --delete-excluded --exclude-from="$dst_dir/$prod_list" "$src_host:$src_dir/" "$dst_dir" 
 
