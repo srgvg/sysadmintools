@@ -71,7 +71,7 @@ else error "Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date
 fi
 
 
-if [ $* = "" ]
+if [ "$*" = "" ]
         then 	# sync backup_root to usb
 	rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/
 	else 	# execute command in parameters
