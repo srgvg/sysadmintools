@@ -73,7 +73,7 @@ fi
 
 if [ "$*" = "" ]
         then 	# sync backup_root to usb
-	rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/
+	rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/  && say "rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/" || error "default rsync command returns error"
 	else 	# execute command in parameters
 	eval $* && say "Command $* -- returns success" || error "Command returns error"
 fi
