@@ -15,7 +15,7 @@ apt-get update
 aptitude install \
 	openssh-server apt-doc apt-dpkg-ref apt-rdepends apt-howto vim-full apt-file openssh-client traceroute tcptraceroute screen \
 	ubuntu-restricted-extras nautilus-open-terminal nautilus-image-converter nautilus-gksu nautilus-actions nautilus-script-audio-convert nautilus-script-collection-svn nautilus-script-manager nautilus-share nautilus-wallpaper ntfsprogs filezilla filezilla-locales system-config-samba \
-	ccsm compizconfig-settings-manager gnome-art usplash startupmanager padevchooser paman paprefs pavucontrol pavumeter \
+	ccsm compizconfig-settings-manager gnome-art usplash startupmanager padevchooser paman paprefs pavucontrol pavumeter wallpaper-tray \
 	gstreamer0.10-plugins-bad gstreamer0.10-plugins-bad-multiverse gstreamer0.10-plugins-base gstreamer0.10-plugins-base-apps gstreamer0.10-plugins-good gstreamer0.10-plugins-ugly gstreamer0.10-plugins-ugly-multiverse gstreamer0.10-gnomevfs gstreamer0.10-alsa gstreamer0.10-tools gstreamer0.10-pitfdll gstreamer0.10-ffmpeg gstreamer-dbus-media-service gstreamer-tools gstreamer-tools gstreamer0.10-fluendo-mp3 gstreamer0.10-fluendo-mpegdemux gstreamer0.10-gnonlin gstreamer0.10-sdl totem-gstreamer gstreamer0.10-plugins-farsight gstreamer0.10-plugins-ugly gstreamer0.10-schroedinger gstreamer-dbus-media-service \
 	sun-java6-bin sun-java6-fonts sun-java6-jre sun-java6-plugin \
 	k3b quick-lounge-applet music-applet mozplugger \
