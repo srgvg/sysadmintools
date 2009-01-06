@@ -64,7 +64,7 @@ esac
 
 say "Mounting disk /dev/disk/by-uuid/$usb = $(readlink -f /dev/disk/by-uuid/$usb)"
 if $(grep -q $(readlink -f /dev/disk/by-uuid/$usb) /etc/mtab )
-then error "Disk $(readlink -f /dev/disk/by-uuid/$usb) was already mounted."
+then say "Disk $(readlink -f /dev/disk/by-uuid/$usb) was already mounted."
 elif $(mount /dev/disk/by-uuid/$usb $mountpoint)
 then say "Disk $(readlink -f /dev/disk/by-uuid/$usb) was mounted."
 else error "Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date)." ; exit 1
