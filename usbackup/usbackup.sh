@@ -2,19 +2,20 @@
 
 ##################################################################
 ### Parameter defaults #####
+# those are overwriten from info from usbackup.conf
 # sum up UUID's for different usb mount points, space separated
-uuids="40f27d2b-ec3b-48c7-a14a-c660563ee940 69b98ce2-dd00-411a-9d63-2083a18734bf"
+uuids=""
 mountpoint="/mnt/usbackup"
-backup_root="/srv/rsnapshot"
+backup_root=""
 # verbosity for STDOUT only, errors are allways send to STDERR; 
 verbose="0"
-# internal parameters
+##################################################################
+# internal parameters, don't change
 config="usbackup.conf"
 MESSAGE_PREFIX="USBACKUP"
 log_tag=$0
 log_facility=syslog
 count=0
-
 ##################################################################
 
 say() {
@@ -71,7 +72,7 @@ else error "Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date
 fi
 
 
-if [ "$*" = "" ]
+if [ "$*" = "" -a ! "$backup_root" = "" ]
         then 	# sync backup_root to usb
 	rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/  && say "rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/" || error "default rsync command returns error"
 	else 	# execute command in parameters
