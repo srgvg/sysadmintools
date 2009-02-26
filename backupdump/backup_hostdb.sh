@@ -9,15 +9,14 @@
 # by Nathan Rosenquist <nathan@rsnapshot.org>
 # http://www.rsnapshot.org/
 #
-# This is a simple shell script to backup different databases 
-# on a Debian based host. It can be used as a standalone script, but 
-# the assumption is that this will be invoked from rsnapshot. Also, since it
-# will run unattended, the user that runs rsnapshot (probably root) should have
-# proper access to the databases, especially mysql
-# a .my.cnf file in their home directory that contains the password for the
-# MySQL root user.
+# This is a simple shell script to backup different databases on a Debian 
+# based host. It can be used as a standalone script, but the assumption is 
+# that this will be invoked from rsnapshot. Also, since it will run unattended
+# so the user that runs rsnapshot (probably root) should have proper access to 
+# the databases, especially in case of mysql a .my.cnf file in the (remote) 
+# user home directory that contains the password will be necessary.
 #
-# This script simply needs to dump a file into the current working directory.
+# This script simply dumps files into the current working directory.
 # rsnapshot handles everything else.
 #
 ##############################################################################
