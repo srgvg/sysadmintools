@@ -37,22 +37,9 @@
 #
 ##############################################################################
 
-
-##################################################################
-<<<<<<< .mine
-=======
-### Parameter defaults #####
-# those are overwriten from info from usbackup.conf
-# sum up UUID's for different usb mount points, space separated
-uuids=""
-mountpoint="/mnt/usbackup"
-backup_root=""
-# verbosity for STDOUT only, errors are allways send to STDERR; 
-verbose="0"
->>>>>>> .r45
-##################################################################
+##############################################################################
 # internal parameters, don't change
-config="usbackup.conf"
+config="usbackup.conf" # should be in /etc or in current dir
 count=0
 ##################################################################
 
@@ -70,6 +57,7 @@ error ()  {
         logger -t $log_tag -p $log_facility.err "$MESSAGE"
         }
 
+# check for $config in current directory or in /etc/ and source the first one found
 if   [ -f $(dirname $0)/$config ]
 then source $(dirname $0)/$config
 elif [ -f /etc/$config ] 
@@ -77,8 +65,10 @@ then source /etc/$config
 else error "Please create  $(dirname $0)/$config OR /etc/$config"; exit
 fi
 
+# if $verbose is set, also make rsync verbose
 if [ $verbose != "0" ] ; then rsync_verbose="-v" ; fi
 
+# check for uuid's amongst connected disks
 for uuid in $uuids 
 	do
 		if [ -e /dev/disk/by-uuid/$uuid ]
@@ -86,6 +76,7 @@ for uuid in $uuids
 		fi
 	done
 
+# we found 0, 1 or more filesystems
 case $count in 
 	0)
 		error "Error: no defined disk available."
@@ -113,6 +104,7 @@ else error "Disk $(readlink -f /dev/disk/by-uuid/$usb) failed to mount at $(date
 fi
 
 
+# checking to execute the default command or a parameter command
 if [ "$*" = "" -a ! "$backup_root" = "" ]
         then 	# sync backup_root to usb
 	say "executing default command: rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/"
