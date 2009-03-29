@@ -1,6 +1,46 @@
 #!/bin/bash
 
+##############################################################################
+# usbackup.sh
+#
+# by Serge van Ginderachter <serge@vanginderachter.be>
+# http://www.vanginderachter.be http://www.ginsys.be
+#
+# This is a simple shell script to sync two directories, from a local disk to 
+# an external (usb) disk. The external disk can be one of many, teh script will 
+# check which is online, based on the file systems uuid,  and mount it 
+# automagically.
+#
+# When called without a parameter, the script will execture a default rsync 
+# command to sync disks. When called with parameters, the parameters are
+# considered as a separate command, and those are executed.
+#
+# After command execution, the disk is unmounted, and fsck is executed on it.
+#
+# The default rsync command was crafted to sync a local rsnapshot
+# (www.rsnapshot.org) backup repository to an external disk.
+#
+##############################################################################
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+
 ##################################################################
+<<<<<<< .mine
+=======
 ### Parameter defaults #####
 # those are overwriten from info from usbackup.conf
 # sum up UUID's for different usb mount points, space separated
@@ -9,19 +49,17 @@ mountpoint="/mnt/usbackup"
 backup_root=""
 # verbosity for STDOUT only, errors are allways send to STDERR; 
 verbose="0"
+>>>>>>> .r45
 ##################################################################
 # internal parameters, don't change
 config="usbackup.conf"
-MESSAGE_PREFIX="USBACKUP"
-log_tag=$0
-log_facility=syslog
 count=0
 ##################################################################
 
 say() {
         MESSAGE="$1"
         TIMESTAMP=$(date +"%F %T")
-        if [ $verbose != "0" ] ; then echo -e "$TIMESTAMP $MESSAGE_PREFIX $MESSAGE" ; fi
+        if [ "$verbose" != "0" ] ; then echo -e "$TIMESTAMP $MESSAGE_PREFIX $MESSAGE" ; fi
         logger -t $log_tag -p $log_facility.info "$MESSAGE"
         }
 
@@ -39,6 +77,8 @@ then source /etc/$config
 else error "Please create  $(dirname $0)/$config OR /etc/$config"; exit
 fi
 
+if [ $verbose != "0" ] ; then rsync_verbose="-v" ; fi
+
 for uuid in $uuids 
 	do
 		if [ -e /dev/disk/by-uuid/$uuid ]
@@ -55,8 +95,9 @@ case $count in
 		true
 		;;
 	*)
-		error "Error: more than one disk available."
-		exit 1
+		#error "Error: more than one disk available."
+		#exit 1
+		error "Warning: more than one disk available. Continuing with the last one enumerated."
 		;;
 esac
 
@@ -74,8 +115,10 @@ fi
 
 if [ "$*" = "" -a ! "$backup_root" = "" ]
         then 	# sync backup_root to usb
-	rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/  && say "rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/" || error "default rsync command returns error"
+	say "executing default command: rsync -aH --delete --numeric-ids --relative $backup_root/ $mountpoint/"
+	rsync -aH --delete --numeric-ids --relative $rsync_verbose $backup_root/ $mountpoint/  && say "default command returns success" || error "default command returns error"
 	else 	# execute command in parameters
+	say "executing parameter command: $*"
 	eval $* && say "Command $* -- returns success" || error "Command returns error"
 fi
 
@@ -86,5 +129,6 @@ if $(umount /dev/disk/by-uuid/$usb)
 fi
 
 ## fsck usb disk
+say "/sbin/e2fsck -p /dev/disk/by-uuid/$usb"
 /sbin/e2fsck -p /dev/disk/by-uuid/$usb >/dev/null
 
