@@ -57,6 +57,7 @@ error ()  {
         logger -t $log_tag -p $log_facility.err "$MESSAGE"
         }
 
+##################################################################
 # check for $config in current directory or in /etc/ and source the first one found
 if   [ -f $(dirname $0)/$config ]
 then source $(dirname $0)/$config
@@ -67,6 +68,9 @@ fi
 
 # if $verbose is set, also make rsync verbose
 if [ $verbose != "0" ] ; then rsync_verbose="-v" ; fi
+##################################################################
+
+say "started: $*"
 
 # check for uuid's amongst connected disks
 for uuid in $uuids 
