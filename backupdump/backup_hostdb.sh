@@ -129,7 +129,7 @@ if [ "$sflag" ]
 then
 	for repo in $($REMOTECOMMAND find $svnrepopaths -mindepth 1 -maxdepth 1 -type d )
 	        do 
-	        dumpfile="./$(basename $repo).svni$zipext"
+	        dumpfile="./$(basename $repo).svn$zipext"
 	        $REMOTECOMMAND svnadmin -q dump $repo $zipit >$dumpfile
 		svndumpfile="$svndumpfile $dumpfile"
         done
