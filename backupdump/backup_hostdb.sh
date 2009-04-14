@@ -45,7 +45,8 @@ lflag=
 sflag=
 mflag=
 dflag=
-	while getopts 'h:lsmd' OPTION
+zflag=
+	while getopts 'h:ls:mdz' OPTION
 	do
 	  case $OPTION in
 	  h)	hflag=1
@@ -65,7 +66,9 @@ dflag=
 			;;
 	  d)	dflag=1
 			;;
-	  ?)	printf "Usage: [-h [user@]host] [-l] [-s [\"<svn repositories paths>\"]] [-m] [-d] \n -h     remote host \n -l     dump openldap \n -m     dump mysql databases \n -d     dump dpkg selections \n -s     dump svn repositories with optional arguments for one or more repository paths \n" $(basename $0)"\n" >&2
+	  z)	zflag=1
+			;;
+	  ?)	printf "Usage: [-h [user@]host] [-l] [-s [\"<svn repositories paths>\"]] [-m] [-d] \n -h     remote host \n -l     dump openldap \n -m     dump mysql databases \n -d     dump dpkg selections \n -s     dump svn repositories with arguments for one or more repository basepaths - can be empty string \n" $(basename $0)"\n -z     zip the dumpfiles" >&2
 			exit 2
 			;;
 	  esac
@@ -153,6 +156,12 @@ if [ "$dumpedfiles" ]
 then
 	/bin/chmod 600 $dpkgdumpfile $ldapdumpfile $sqldumpfile $svndumpfile
 fi
-
-
+##############################################################################
+# zip the files
+##############################################################################
+if [ "$zflag" ]
+then
+	/bin/gzip $dpkgdumpfile $ldapdumpfile $sqldumpfile $svndumpfile
+fi
+##############################################################################
 
