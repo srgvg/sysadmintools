@@ -46,6 +46,10 @@ sflag=
 mflag=
 dflag=
 zflag=
+
+zipit="cat"
+zipext=""
+
 	while getopts 'h:ls:mdz' OPTION
 	do
 	  case $OPTION in
@@ -66,7 +70,7 @@ zflag=
 			;;
 	  d)	dflag=1
 			;;
-	  z)	zipit="|gzip"
+	  z)	zipit="gzip"
 		zipext=".gz"
 			;;
 	  ?)	printf "Usage: [-h [user@]host] [-l] [-s [\"<svn repositories paths>\"]] [-m] [-d] \n -h     remote host \n -l     dump openldap \n -m     dump mysql databases \n -d     dump dpkg selections \n -s     dump svn repositories with arguments for one or more repository basepaths - can be empty string \n" $(basename $0)"\n -z     zip the dumpfiles" >&2
@@ -96,7 +100,7 @@ if [ ! "$REMOTEHOST" = "" ]; then REMOTECOMMAND="ssh $REMOTEHOST"; fi
 if [ "$dflag" ]
 then
 	dpkgdumpfile=dpkg-selections.txt$zipext
-	$REMOTECOMMAND dpkg --get-selections $zipit > $dpkgdumpfile
+	$REMOTECOMMAND dpkg --get-selections | $zipit > $dpkgdumpfile
 	dumpedfiles=1
 else
 	dpkgdumpfile=
@@ -114,7 +118,7 @@ then
 	for db in $DATABASES
 	    do
 	    dumpfile="$db.sql$zipext"
-	    $REMOTECOMMAND mysqldump $db $TABLES --opt --lock-all-tables --add-drop-database --add-drop-table --add-locks --allow-keywords  -q $zipit > $dumpfile
+	    $REMOTECOMMAND mysqldump $db $TABLES --opt --lock-all-tables --add-drop-database --add-drop-table --add-locks --allow-keywords  -q | $zipit > $dumpfile
 	    sqldumpfile="$sqldumpfile $dumpfile"
 	done
 	dumpedfiles=1
@@ -130,7 +134,7 @@ then
 	for repo in $($REMOTECOMMAND find $svnrepopaths -mindepth 1 -maxdepth 1 -type d )
 	        do 
 	        dumpfile="./$(basename $repo).svn$zipext"
-	        $REMOTECOMMAND svnadmin -q dump $repo $zipit >$dumpfile
+	        $REMOTECOMMAND svnadmin -q dump $repo | $zipit >$dumpfile
 		svndumpfile="$svndumpfile $dumpfile"
         done
 	dumpedfiles=1
@@ -144,7 +148,7 @@ if [ "$lflag" ]
 then
 	ldapdumpfile=ldap.ldif$zipext
 	$REMOTECOMMAND invoke-rc.d slapd stop >/dev/null
-	$REMOTECOMMAND slapcat $zipit > $ldapdumpfile
+	$REMOTECOMMAND slapcat | $zipit > $ldapdumpfile
 	$REMOTECOMMAND invoke-rc.d slapd start >/dev/null
 	dumpedfiles=1
 else
