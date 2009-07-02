@@ -62,7 +62,7 @@ case "$1" in
 	echo '	<PHONE_CONFIG>
 		<phone1>
   		<reg 	reg.1.address="'$3'" 
-       			reg.1.auth.password="'$4'"
+       			reg.1.auth.password="'$5'"
        			reg.1.auth.userId="'$3'" 
        			reg.1.displayName="'$3'" 
        			reg.1.label="'$3'"
@@ -95,7 +95,7 @@ case "$1" in
 	qualify=yes
 	context='$6 >> $PHONEDIR/sip.conf
 
-	echo $3' => 1234,'$5 >> $PHONEDIR/voicemail.conf
+	echo $3' => 1234,'$4 >> $PHONEDIR/voicemail.conf
 
 	#service asterisk reload
 
