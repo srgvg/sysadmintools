@@ -46,7 +46,7 @@ count=0
 say() {
         MESSAGE="$1"
         TIMESTAMP=$(date +"%F %T")
-        if [ "$verbose" != "0" ] ; then echo -e "$TIMESTAMP $MESSAGE_PREFIX $MESSAGE" ; fi
+        if [ "$verbose" != "0" ] ; then echo -e "$TIMESTAMP $MESSAGE_PREFIX $MESSAGE" >&2 ; fi
         logger -t $log_tag -p $log_facility.info "$MESSAGE"
         }
 
