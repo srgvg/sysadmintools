@@ -10,13 +10,19 @@ then
         # not a device or device does not exist
         status="-1"
 else
-        /sbin/mdadm --detail -t /dev/${md} >/dev/null 2>&1
-	# 0      The array is functioning normally.
-	# 1      The array has at least one failed device.
-	# 2      The array has multiple failed devices such that it is unusable.
-	# 4      There was an error while trying to get information about the device.
+        mdadmoutput=$(/sbin/mdadm --detail -t /dev/${md} 2>&1)
+        # 0      The array is functioning normally.
+        # 1      The array has at least one failed device.
+        # 2      The array has multiple failed devices such that it is unusable.
+        # 4      There was an error while trying to get information about the device.
         status=$?
+fi
+if      [ "$status" = 0 ] && \
+        $( echo $mdadmoutput | grep -e State.*resyncing -e State.*recovering >/dev/null )
+then
+        status=3
 fi
 echo $status
 exit $status
+
 
