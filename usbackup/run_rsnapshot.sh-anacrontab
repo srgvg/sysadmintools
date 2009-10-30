@@ -1,0 +1,16 @@
+# /etc/anacrontab: configuration file for anacron
+
+# See anacron(8) and anacrontab(5) for details.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# These replace cron's entries
+1		5	cron.daily	nice run-parts --report /etc/cron.daily
+7		10	cron.weekly	nice run-parts --report /etc/cron.weekly
+@monthly	15	cron.monthly 	nice run-parts --report /etc/cron.monthly
+
+@monthly	5	rsnapshot.monthly	mkdir -p /var/lib/rsnapshot/ && touch / /var/lib/rsnapshot/monthly.0 /var/lib/rsnapshot/monthly.1
+@weekly		10	rsnapshot.weekly	mkdir -p /var/lib/rsnapshot/ && touch / /var/lib/rsnapshot/weekly.0  /var/lib/rsnapshot/weekly.1
+@daily		15	rsnapshot.daily		mkdir -p /var/lib/rsnapshot/ && touch / /var/lib/rsnapshot/daily.0   /var/lib/rsnapshot/daily.1
+
