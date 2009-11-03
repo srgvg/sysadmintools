@@ -18,6 +18,7 @@ else
         status=$?
 fi
 if      [ "$status" = 0 ] && \
+	[ $(cat /sys/block/${md}/md/degraded) = 1 ] && \
         $( echo $mdadmoutput | grep -e State.*resyncing -e State.*recovering >/dev/null )
 then
         status=3
