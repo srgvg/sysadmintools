@@ -83,7 +83,7 @@ say "backup started"
 # Stop the Zimbra services
 say "stopping the Zimbra services, this may take some time"
 /etc/init.d/zimbra stop || error "error stopping Zimbra" 
-kill -9 $(ps -u zimbra -o "pid=") || error "Error stopping Zimbra" #added as a workaround to zimbra bug 18653
+[ "$(ps -u zimbra -o "pid=")" ] && kill -9 $(ps -u zimbra -o "pid=") #added as a workaround to zimbra bug 18653
 
 # Create a logical volume called ZimbraBackup
 say "creating a LV called $zm_snapshot"
