@@ -110,10 +110,8 @@ fi
 ##############################################################################
 if [ "$mflag" ]
 then
-	# check MYSQL data directory
-	MYSQL_DATA_DIR=$( $REMOTECOMMAND grep datadir /etc/mysql/my.cnf | sed -e "s/.*\=//" -e "s/^\ //" )
 	# enumerate the databases
-	DATABASES=$( $REMOTECOMMAND find $MYSQL_DATA_DIR/ -type d | xargs -n1 basename)
+	DATABASES=$( $REMOTECOMMAND mysql -Bs --execute "show databases;" )
 	# dump backups
 	for db in $DATABASES
 	    do
