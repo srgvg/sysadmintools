@@ -46,6 +46,11 @@ sflag=
 mflag=
 dflag=
 zflag=
+ERR=0
+ERR_DPKG=1
+ERR_MYSQL=2
+ERR_SVN=4
+ERR_LDAP=8
 
 zipit="cat"
 zipext=""
@@ -100,7 +105,7 @@ if [ ! "$REMOTEHOST" = "" ]; then REMOTECOMMAND="ssh $REMOTEHOST"; fi
 if [ "$dflag" ]
 then
 	dpkgdumpfile=dpkg-selections.txt$zipext
-	$REMOTECOMMAND dpkg --get-selections | $zipit > $dpkgdumpfile
+	$REMOTECOMMAND dpkg --get-selections | $zipit > $dpkgdumpfile || ERR=$ERR+$ERR_DPKG
 	dumpedfiles=1
 else
 	dpkgdumpfile=
@@ -116,7 +121,7 @@ then
 	for db in $DATABASES
 	    do
 	    dumpfile="$db.sql$zipext"
-	    $REMOTECOMMAND mysqldump $db $TABLES --opt --lock-all-tables --add-drop-database --add-drop-table --add-locks --allow-keywords  -q | $zipit > $dumpfile
+	    $REMOTECOMMAND mysqldump $db $TABLES --opt --lock-all-tables --add-drop-database --add-drop-table --add-locks --allow-keywords  -q | $zipit > $dumpfile  || ERR=$ERR+$ERR_MYSQL
 	    sqldumpfile="$sqldumpfile $dumpfile"
 	done
 	dumpedfiles=1
@@ -132,7 +137,7 @@ then
 	for repo in $($REMOTECOMMAND find $svnrepopaths -mindepth 1 -maxdepth 1 -type d )
 	        do 
 	        dumpfile="./$(basename $repo).svn$zipext"
-	        $REMOTECOMMAND svnadmin -q dump $repo | $zipit >$dumpfile
+	        $REMOTECOMMAND svnadmin -q dump $repo | $zipit >$dumpfile  || ERR=$ERR+$ERR_SVN
 		svndumpfile="$svndumpfile $dumpfile"
         done
 	dumpedfiles=1
@@ -146,7 +151,7 @@ if [ "$lflag" ]
 then
 	ldapdumpfile=ldap.ldif$zipext
 	$REMOTECOMMAND invoke-rc.d slapd stop >/dev/null
-	$REMOTECOMMAND slapcat | $zipit > $ldapdumpfile
+	$REMOTECOMMAND slapcat | $zipit > $ldapdumpfile || ERR=$ERR+$ERR_LDAP
 	$REMOTECOMMAND invoke-rc.d slapd start >/dev/null
 	dumpedfiles=1
 else
@@ -160,4 +165,6 @@ then
 	/bin/chmod 600 $dpkgdumpfile $ldapdumpfile $sqldumpfile $svndumpfile
 fi
 ##############################################################################
+
+exit $ERR
 
