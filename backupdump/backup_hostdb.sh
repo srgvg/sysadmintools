@@ -55,6 +55,9 @@ ERR_LDAP=8
 zipit="cat"
 zipext=""
 
+# backup files only readable by rsnapshot process owner
+umask 007
+
 	while getopts 'h:ls:mdz' OPTION
 	do
 	  case $OPTION in
@@ -165,6 +168,10 @@ then
 	/bin/chmod 600 $dpkgdumpfile $ldapdumpfile $sqldumpfile $svndumpfile
 fi
 ##############################################################################
+
+if [ $ERR -gt 0 ]
+then 	echo "Error $ERR on host $REMOTEHOST"
+fi
 
 exit $ERR
 
