@@ -1,0 +1,54 @@
+#!/bin/sh
+#set -x
+
+# This script is intended to be the force command to be used through an SSH key
+# to validate only certain commands called from the backup_hostdb.sh script
+
+reject() {
+        echo "Command rejected: # $SSH_ORIGINAL_COMMAND #" >&2
+        exit 1
+}
+
+case "$SSH_ORIGINAL_COMMAND" in
+        *\&*)
+                reject
+                ;;
+        *\(*)
+                reject
+                ;;
+        *\{*)
+                reject
+                ;;
+        *\;*)
+                reject
+                ;;
+        *\<*)
+                reject
+                ;;
+        *\`*)
+                reject
+                ;;
+        *\|*)
+                reject
+                ;;
+        rsync\ --server*)
+                sudo $SSH_ORIGINAL_COMMAND
+                ;;
+        mysql\ -Bs)
+                $SSH_ORIGINAL_COMMAND
+                ;;
+        mysqldump\ *)
+                $SSH_ORIGINAL_COMMAND
+                ;;
+        dpkg\ --get-selections)
+                $SSH_ORIGINAL_COMMAND
+                ;;
+        svnadmin\ -q\ dump\ *)
+                $SSH_ORIGINAL_COMMAND
+                ;;
+        *)
+                reject
+                ;;
+esac
+
+
