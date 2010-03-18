@@ -119,7 +119,7 @@ fi
 if [ "$mflag" ]
 then
 	# enumerate the databases
-	DATABASES=$( $REMOTECOMMAND mysql -Bs --execute "show databases;" )
+	DATABASES=$( echo show databases | $REMOTECOMMAND mysql -Bs )
 	# dump backups
 	for db in $DATABASES
 	    do
