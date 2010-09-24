@@ -1,0 +1,82 @@
+#!/bin/sh
+# Set the firewall rules
+# Must be started immediately after interfaces are up (networking has number 40)
+# So, add the symbolic link with update-rc.d firewall start 41 S .    (watch the '.')
+# History before svginer github import:
+# Created by Brecht Vermeulen, 16-01-01 @intec.ugent.be
+# Patched by Serge van Ginderachter, 7-01-10 @intec.ugent.be
+# License: GPL v2
+ 
+RULES=/etc/iptables/rules
+IPFW=/sbin/iptables
+MAILTO=root
+BEFORE=/tmp/firewall_rules_before
+AFTER=/tmp/firewall_rules_after
+CHANGES=/tmp/firewall_rules_changes
+
+test -x $RULES || exit 0
+
+cleanup() {
+	$IPFW -t filter -F
+	$IPFW -t filter -X
+        $IPFW -t nat -F
+        $IPFW -t nat -X
+        $IPFW -t mangle -F
+        $IPFW -t mangle -X
+}
+
+reloading() {
+        ( $IPFW -L -n -v ; $IPFW -t nat -L -n -v ) |/usr/bin/mawk '{if ($1!="Chain") {print $3,"\t","\t",$4,"\t",$5,"\t",$6,"\t",$7,"\t",$8,"\t",$9,"\t\t",$10," ",$11," ",$12," ",$13," ",$14," ",$15}}' > $BEFORE
+        echo "Loading firewall rules"
+	cleanup
+        $RULES
+        echo "done."
+        ( $IPFW -L -n -v ; $IPFW -t nat -L -n -v ) |/usr/bin/mawk '{if ($1!="Chain") {print $3,"\t","\t",$4,"\t",$5,"\t",$6,"\t",$7,"\t",$8,"\t",$9,"\t\t",$10," ",$11," ",$12," ",$13," ",$14," ",$15}}' > $AFTER
+
+        diff -u $BEFORE $AFTER > $CHANGES
+
+        echo "END" >> $CHANGES
+
+        echo "CHANGES:"
+        cat $CHANGES
+
+(cat <<EOF
+The firewall rules were reloaded on `/bin/hostname` on `/bin/date`:
+EOF
+echo
+echo "The changes were :"
+cat $CHANGES
+) | /usr/bin/mail -s "Firewall reload on `/bin/hostname`" $MAILTO
+
+rm $BEFORE
+rm $AFTER
+rm $CHANGES
+}
+
+case "$1" in
+    start)
+        # rules are first flushed, so also restart and reload here
+        echo "Loading firewall rules"
+        $RULES
+        echo "done."
+        ;;
+    restart|reload|force-reload)
+        reloading
+        ;;
+    stop)
+        ;;
+    clean)
+        # This is not stop, because stop is called when shutdown and this is not
+        # necessary (security)
+	cleanup
+	$IPFW -P INPUT ACCEPT
+	$IPFW -P OUTPUT ACCEPT
+	$IPFW -P FORWARD ACCEPT
+        ;;
+    *)
+        echo "Usage: /etc/inet.d/firewall {start|restart|reload|clean}"
+        exit 1
+        ;;
+esac
+ 
+exit 0  

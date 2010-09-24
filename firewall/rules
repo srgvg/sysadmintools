@@ -1,0 +1,205 @@
+#!/bin/sh
+
+################################################################################
+# iptables IP Filter
+# FORWARDing, INPUT and OUTPUT rules
+# Routing is put on by /etc/sysctl.conf
+################################################################################
+
+# History before svginder github import
+# 20050303, bvermeul, initial script
+# 20090717, svginder, cleanup rewrite to statefull rules - in progress
+# License: GPL v2
+
+################################################################################
+# INITIALISATION #
+################################################################################
+
+# Init some handy vars
+ipfw="/sbin/iptables"
+#ipfw="/sbin/iptables -v "
+#ipfw="echo"
+
+INPUT_POLICY="DROP"
+OUTPUT_POLICY="DROP"
+FORWARD_POLICY="DROP"
+
+extern_ip=""
+extern_net=""
+extern_iface="eth1"
+
+intern_ip=""
+intern_net=""
+intern_iface="eth0"
+
+highport="1024:65535"
+
+# dig A +short ftp.belnet.be volatile.debian.org security.debian.org
+debian_apt_repo_ips=""
+
+################################################################################
+# CLEANUP #
+################################################################################
+
+$ipfw -t filter -F
+$ipfw -t filter -X
+$ipfw -t nat -F
+$ipfw -t nat -X
+$ipfw -t mangle -F
+$ipfw -t mangle -X
+
+################################################################################
+# INPUT #
+################################################################################
+
+# Note, only packets coming in for this host himself, pass these rules
+
+#############################################################################
+# INPUT chain, flush and set default policy of reject. Actually the default policy
+# is irrelevant because there is a catch all rule with deny and log.
+# For INPUT rules, -i means the interface on which a packet is received
+#
+$ipfw -F INPUT
+$ipfw -P INPUT $INPUT_POLICY
+
+################################################################################
+# Making the firewall STATEFULL 
+################################
+# The next rule will make sure that none of the traffic that belongs to already established connections will be dropped. 
+# This rule replaces the inverted rule used in stateless scripts
+$ipfw -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+
+# failsave rule to allow ssh access
+$ipfw -A INPUT -p tcp --dport 22 -j ACCEPT
+# obviously: DON'T DELETE ^^^^^^^ this rule
+
+# prevent IP spoofing
+# deny all packets on external iface which originate from internal ip address
+$ipfw -A INPUT -j LOG -p all -i $extern_iface -s $intern_net
+$ipfw -A INPUT -j DROP -p all -i $extern_iface -s $intern_net
+
+# Allow DHCP requests from internal
+#$ipfw -A INPUT -i $intern_iface -p udp --sport 68 --dport 67 -j ACCEPT
+
+# Allow icmp on all interfaces with destination firewall
+$ipfw -A INPUT -p icmp  -m state --state NEW,ESTABLISHED,RELATED  -j ACCEPT
+
+# loopback interface is valid.
+#
+$ipfw -A INPUT -i lo -j ACCEPT
+
+# Shamelessly stolen from /etc/init.d/networking
+# not loopback interface, but a loopback address
+$ipfw -A INPUT -i ! lo -s 127.0.0.0/8 -j LOG
+$ipfw -A INPUT -i ! lo -s 127.0.0.0/8 -j DROP
+
+# To avoid much lines in the syslog
+#$ipfw -A INPUT -d 224.0.0.1 -j DROP
+
+# catch all rule, all other incoming is denied and logged. pity there is no
+# log option on the policy but this does the job instead.
+#
+if [ $INPUT_POLICY != "ACCEPT" ]
+then	$ipfw -A INPUT -j LOG
+	$ipfw -A INPUT -j $INPUT_POLICY
+fi
+
+
+################################################################################
+# OUTPUT #
+################################################################################
+
+################################################################################
+# Outgoing, flush and set default policy of reject. Actually the default policy
+# is irrelevant because there is a catch all rule with deny and log.
+#
+$ipfw -F OUTPUT
+$ipfw -P OUTPUT $OUTPUT_POLICY
+
+################################################################################
+# Making the firewall STATEFULL 
+################################
+# The next rule will make sure that none of the traffic that belongs to already established connections will be dropped. 
+# This rule replaces the inverted rule used in stateless scripts
+$ipfw -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# For OUTPUT rules, -o means the interface on which a packet will be sent
+# Note that only packets leaving THIS host, pass this chain <-> ipfwhains
+
+# allow dns requests to servers
+$ipfw -A OUTPUT -p tcp --dport 53 -j ACCEPT
+$ipfw -A OUTPUT -p udp --dport 53 -j ACCEPT
+
+# Allow NTP 
+$ipfw -A OUTPUT -p udp --sport 123 --dport 123 -j ACCEPT
+
+# allow outgoing icmp packets 
+$ipfw -A OUTPUT -p icmp  -m state --state NEW,ESTABLISHED,RELATED  -j ACCEPT
+
+# For debian package install and security updates (ftp.belnet and security.debian.org and volatile.debian.org)
+for i in $debian_apt_repo_ips;
+do
+	$ipfw -A OUTPUT -o $extern_iface -p tcp --dport 80 -d $i -s $extern_ip -j ACCEPT
+done
+
+# loopback interface is valid.
+$ipfw -A OUTPUT -o lo -j ACCEPT
+
+# catch all rule, all other outgoing is denied and logged. pity there is no
+# log option on the policy but this does the job instead.
+#
+# Freaky: this is probably not capturing everything as packets without
+# IP get through (e.g. DHCP things, which is good ;-) ) I guess
+
+if [ $INPUT_POLICY != "ACCEPT" ]
+then	$ipfw -A OUTPUT -j LOG
+	$ipfw -A OUTPUT -j $OUTPUT_POLICY
+fi
+
+
+################################################################################
+# FORWARDING #
+################################################################################
+
+################################################################################
+# FORWARDing, flush and set default policy of deny. Actually the default policy
+# is irrelevant because there is a catch all rule with deny and log.
+#
+$ipfw -F FORWARD
+$ipfw -P FORWARD $FORWARD_POLICY
+
+################################################################################
+# Making the firewall STATEFULL 
+#
+# The next rule will make sure that none of the traffic that belongs to already established connections will be dropped. 
+# This rule replaces the inverted rule used in stateless scripts
+$ipfw -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+################################################################################
+#
+# catch all rule, all other FORWARDing is denied and logged. pity there is no
+# log option on the policy but this does the job instead.
+#
+if [ $FORWARD_POLICY != "ACCEPT" ]
+then	$ipfw -A FORWARD -j LOG
+	$ipfw -A FORWARD -j $FORWARD_POLICY
+fi
+
+################################################################################
+# DEBUG
+################################################################################
+# For debugging
+if [ $debug = "1" ]
+then	sleep 10
+	$ipfw -F FORWARD
+	$ipfw -P FORWARD ACCEPT
+	$ipfw -F INPUT
+	$ipfw -P INPUT ACCEPT
+	$ipfw -F OUTPUT
+	$ipfw -P OUTPUT ACCEPT
+fi
+
+################################################################################
+# THE END
+################################################################################
