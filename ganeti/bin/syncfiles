@@ -1,0 +1,13 @@
+#!/bin/sh
+#set -x
+
+DIRS="/etc/ganeti /srv/ganeti/os/"
+NODES=$(gnt-node list --no-headers -o name | grep -v $(hostname))
+
+for n in $NODES
+do	echo "### Syncing $DIRS to $n"
+	rsync -av $DIRS $n:/ --relative $*
+	echo "###"
+	echo
+done
+
