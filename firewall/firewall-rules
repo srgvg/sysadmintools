@@ -190,7 +190,7 @@ fi
 # DEBUG
 ################################################################################
 # For debugging
-if [ $debug = "1" ]
+if [ z$debug = z1 ]
 then	sleep 10
 	$ipfw -F FORWARD
 	$ipfw -P FORWARD ACCEPT
