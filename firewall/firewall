@@ -5,7 +5,6 @@
 # History before svginer github import:
 # Created by Brecht Vermeulen, 16-01-01 @intec.ugent.be
 # Patched by Serge van Ginderachter, 7-01-10 @intec.ugent.be
-# License: GPL v2
  
 RULES=/etc/firewall-rules
 IPFW=/sbin/iptables
