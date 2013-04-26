@@ -1,0 +1,156 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          libreoffice-server-headless-lsb-initscript 
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Initscript to start LibreOffice as server
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+DESC="LibreOffice server"
+NAME=libreoffice-server-headless-lsb-initscript
+DAEMON=/usr/bin/libreoffice
+SCRIPTNAME=/etc/init.d/$NAME
+
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 3
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+   # Return
+   #   0 if daemon has been started
+   #   1 if daemon was already running
+   #   2 if daemon could not be started
+   #PID=`pgrep -f soffice.bin`
+   PID_W_NL=`pgrep -fc soffice.bin`
+   PID=`echo -n $PID_W_NL`
+   if [ "$PID" != "0" ]; then
+      return 1
+   else
+      /usr/bin/libreoffice --headless --accept="socket,port=8100;urp;" --nofirststartwizard &
+		if [ "$?" -eq "0" ]; then
+	  		return 0
+	   else
+   		return 2	
+	   fi
+	fi
+
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+	PID_W_NL=`pgrep -fc soffice.bin`
+	PID=`echo -n $PID_W_NL`
+	if [ "$PID" = "0" ]; then
+		return 1
+	else
+		pgrep -f soffice.bin | xargs kill -9
+  	   if [ "$?" -eq "0" ]; then
+         return 0
+  	   else
+         return 2
+      fi
+	fi
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+	return 0
+}
+
+#
+# Function that checks status of the daemon/service
+#
+do_status()
+{
+	# Return
+	#   0 One or more processes matched the criteria.
+	#   1 No processes matched.
+	#   2 Syntax error in the command line.
+	#   3 Fatal error: out of memory etc.
+	PID_W_NL=`pgrep -fc soffice.bin`
+   PID=`echo -n $PID_W_NL`
+	if [ "$PID" = "0" ]; then
+      echo "Not running"
+	else
+      echo "Running"
+	fi
+	return 0
+}
+
+case "$1" in
+	start)
+		log_daemon_msg "Starting $DESC" "$NAME"
+		do_start
+		case "$?" in
+			0|1) log_end_msg 0 ;;
+			2) log_end_msg 1 ;;
+		esac
+	;;
+
+	stop)
+		log_daemon_msg "Stopping $DESC" "$NAME"
+		do_stop
+		case "$?" in
+			0|1) log_end_msg 0 ;;
+			2) log_end_msg 1 ;;
+		esac
+	;;
+
+	restart|force-reload)
+		log_daemon_msg "Restarting $DESC" "$NAME"
+		do_stop
+		case "$?" in
+			0|1)
+				do_start
+				case "$?" in
+					0) log_end_msg 0 ;;
+					1) log_end_msg 1 ;; # Old process is still running
+					*) log_end_msg 1 ;; # Failed to start
+				esac
+			;;
+			*)
+				# Failed to stop
+				log_end_msg 1
+			;;
+		esac
+	;;
+
+	status)
+		do_status
+		exit $?
+	;;
+
+	*)
+		echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status}" >&2
+		exit 3
+	;;
+esac
