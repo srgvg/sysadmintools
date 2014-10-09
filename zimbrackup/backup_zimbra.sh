@@ -35,6 +35,7 @@ source backup_zimbra_config
 # zm_vg=data
 # zm_path=
 # zm_lv_fs=ext3
+# zm_mount_opts=ro
 # LVCREATE=/sbin/lvcreate
 # LVREMOVE=/sbin/lvremove
 # zm_snapshot=opt-snapshot
@@ -107,7 +108,7 @@ mkdir -p $zm_snapshot_path || error "error creating snapshot mount point $zm_sna
 
 # Mount the logical volume snapshot to the mountpoint
 say "mounting the snapshot $zm_snapshot"
-mount -t $zm_lv_fs -o nouuid,ro /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
+mount -t $zm_lv_fs -o $zm_mount_opts /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
 
 # Create the current backup
 say "rsyncing the snapshot to the backup directory $backup_dir"

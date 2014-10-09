@@ -34,6 +34,9 @@ zm_path=
 # zm_lv_fs - the file system type (ext3, xfs, ...) in /opt/zimbra
 zm_lv_fs=ext3
 
+# zm_mount_opts - options for mount, ZFS may need nouuid
+zm_mount_opts=ro
+
 # lvcreate lvremove - path and command for the lvm logical volume creation and deletion command
 LVCREATE=/sbin/lvcreate
 LVREMOVE=/sbin/lvremove
