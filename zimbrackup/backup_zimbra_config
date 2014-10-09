@@ -43,8 +43,11 @@ LVREMOVE=/sbin/lvremove
 # zmsnapshot - the snapshot volume name for $zm_lv
 zm_snapshot=opt-snapshot
 
-# zmsnapshot_size - size avalable for growing the snapshot
-zm_snapshot_size=1GB
+# zmsnapshot_size - size avalable for growing the snapshot - set either this or zm_snapshot_extents
+zm_snapshot_size=1G
+
+# zm_snapshot_extents - number of extents avalable for growing the snapshot - set either this or zm_snapshot_size
+#zm_snapshot_extents=50%FREE
 
 # zm_snapshot_mnt - zimbra snapshot mount point
 zm_snapshot_path=/tmp/opt-snapshot

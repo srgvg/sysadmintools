@@ -38,7 +38,8 @@ source backup_zimbra_config
 # LVCREATE=/sbin/lvcreate
 # LVREMOVE=/sbin/lvremove
 # zm_snapshot=opt-snapshot
-# zm_snapshot_size=1GB
+# zm_snapshot_size=1G
+# zm_snapshot_extents=
 # zm_snapshot_path=/tmp/opt-snapshot
 # V=
 # debug=
@@ -74,6 +75,11 @@ error ()  {
 	exit
 	}
 
+# Check for sane lv settings
+if [[ $zm_snapshot_size && $zm_snapshot_extents ]]; then
+	error "cannot specify both byte size ($zm_snapshot_size) and number of extents ($zm_snapshot_extents) for snapshot; please set only one or the other"
+fi
+
 # Output date
 say "backup started"
 
@@ -84,7 +90,12 @@ say "stopping the Zimbra services, this may take some time"
 
 # Create a logical volume called ZimbraBackup
 say "creating a LV called $zm_snapshot"
-$LVCREATE -L $zm_snapshot_size -s -n $zm_snapshot /dev/$zm_vg/$zm_lv  || error "error creating snapshot, exiting" 
+if [[ $zm_snapshot_size ]]; then
+	lv_size="-L $zm_snapshot_size"
+else
+	lv_size="-l $zm_snapshot_extents"
+fi
+$LVCREATE $lv_size -s -n $zm_snapshot /dev/$zm_vg/$zm_lv  || error "error creating snapshot, exiting" 
 
 # Start the Zimbra services
 say "starting the Zimbra services in the background....."
