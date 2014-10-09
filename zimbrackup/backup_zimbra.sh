@@ -74,9 +74,6 @@ error ()  {
 	exit
 	}
 
-# load kernel module to enable LVM snapshots
-/sbin/modprobe dm-snapshot || error "Error loading dm-snapshot module"
-
 # Output date
 say "backup started"
 
