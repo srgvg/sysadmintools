@@ -55,7 +55,10 @@ zm_snapshot_size=1G
 # zm_snapshot_path - zimbra snapshot mount point
 zm_snapshot_path=/tmp/opt-snapshot
 
-# V - rsync verbose - to enable, set to "v"
+# backup_util - which utility to use for backup: rsync or obnam
+backup_util=rsync
+
+# V - verbose data transfer - to enable, set to "v"
 # V=v
 V=
 

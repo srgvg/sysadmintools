@@ -42,6 +42,7 @@ source backup_zimbra_config
 # zm_snapshot_size=1G
 # zm_snapshot_extents=
 # zm_snapshot_path=/tmp/opt-snapshot
+# backup_util=rsync
 # V=
 # debug=
 
@@ -110,9 +111,20 @@ mkdir -p $zm_snapshot_path || error "error creating snapshot mount point $zm_sna
 say "mounting the snapshot $zm_snapshot"
 mount -t $zm_lv_fs -o $zm_mount_opts /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
 
-# Create the current backup
-say "rsyncing the snapshot to the backup directory $zm_backup_path"
-rsync -aAHS$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
+# Create the current backup using the configured tool
+case $backup_util in
+	rsync)
+		# Use rsync
+		say "rsyncing the snapshot to the backup directory $zm_backup_path"
+		rsync -aAHS$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
+		;;
+	obnam)
+		# Use obnam
+		say "backing up via obnam to the backup directory $zm_backup_path"
+		[[ $V = "v" ]] && verbose="--verbose"
+		obnam backup $verbose --repository $zm_backup_path $zm_snapshot_path/$zm_path || error "error creating obname backup"
+		;;
+esac
 
 # Unmount $zm_snapshot from $zm_snapshot_mnt
 say "unmounting the snapshot"
