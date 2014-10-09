@@ -112,7 +112,7 @@ mount -t $zm_lv_fs -o $zm_mount_opts /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
 
 # Create the current backup
 say "rsyncing the snapshot to the backup directory $zm_backup_path"
-rsync -aAH$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
+rsync -aAHS$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
 
 # Unmount $zm_snapshot from $zm_snapshot_mnt
 say "unmounting the snapshot"
