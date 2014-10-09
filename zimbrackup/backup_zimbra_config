@@ -31,8 +31,8 @@ zm_vg=data
 # zimbra_path - the path beneath the Logical Volume $zm_lv that needs to be synced
 zm_path=
 
-# zm_lv_fs - the file system type (ext3, xfs, ...) in /opt/zimbra
-zm_lv_fs=ext3
+# zm_lv_fs - the file system type (ext3, xfs, ...) of $zm_lv
+zm_lv_fs=auto
 
 # zm_mount_opts - options for mount, ZFS may need nouuid
 zm_mount_opts=ro

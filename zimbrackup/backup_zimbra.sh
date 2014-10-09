@@ -34,7 +34,7 @@ source backup_zimbra_config
 # zm_lv=opt
 # zm_vg=data
 # zm_path=
-# zm_lv_fs=ext3
+# zm_lv_fs=auto
 # zm_mount_opts=ro
 # LVCREATE=/sbin/lvcreate
 # LVREMOVE=/sbin/lvremove
