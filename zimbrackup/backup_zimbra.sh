@@ -32,6 +32,7 @@
 source backup_zimbra_config
 # zm_backup_path=/opt.bak
 # zm_lv=opt
+# zm_lv_mount_point=
 # zm_vg=data
 # zm_path=
 # zm_lv_fs=auto
@@ -90,6 +91,12 @@ say "stopping the Zimbra services, this may take some time"
 /etc/init.d/zimbra stop || error "error stopping Zimbra" 
 [ "$(ps -u zimbra -o "pid=")" ] && kill -9 $(ps -u zimbra -o "pid=") #added as a workaround to zimbra bug 18653
 
+# Unmount volume to ensure clean filesystem for snapshot
+if [[ $zm_lv_mount_point ]]; then
+	say "unmounting $zm_lv_mount_point"
+	umount $zm_lv_mount_point || error "unable to unmount $zm_lv_mount_point"
+fi
+
 # Create a logical volume called ZimbraBackup
 say "creating a LV called $zm_snapshot"
 if [[ $zm_snapshot_size ]]; then
@@ -98,6 +105,12 @@ else
 	lv_size="-l $zm_snapshot_extents"
 fi
 $LVCREATE $lv_size -s -n $zm_snapshot /dev/$zm_vg/$zm_lv  || error "error creating snapshot, exiting" 
+
+# Remount original volume
+if [[ $zm_lv_mount_point ]]; then
+        say "re-mounting $zm_lv_mount_point"
+        mount $zm_lv_mount_point || error "unable to re-mount $zm_lv_mount_point"
+fi
 
 # Start the Zimbra services
 say "starting the Zimbra services in the background....."

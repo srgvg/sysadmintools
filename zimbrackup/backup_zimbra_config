@@ -25,6 +25,10 @@ zm_backup_path=/opt.bak
 # zm_lv - the Logical Volume that contains /opt/zimbra - /opt mount point expected
 zm_lv=opt
 
+# zm_lv_mount_point - mount point of Logical Volume containg Zimbra - if set, will be unmount to ensure clean filesytem before snapshot
+# MUST be fully set up in /etc/fstab and must NOT be in use by anything other than Zimbra
+zm_lv_mount_point=
+
 # zm_vg - the Volume Group that contains $zm_lv
 zm_vg=data
 
