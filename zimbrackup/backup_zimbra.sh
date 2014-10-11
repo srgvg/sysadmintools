@@ -75,7 +75,7 @@ error ()  {
 	echo -e $TIMESTAMP $MESSAGE >&2
 	logger -t $log_tag -p $log_facility.$log_level_err "$MESSAGE"
 	logger -t $log_tag -p $log_facility_mail.$log_level_err "$MESSAGE"
-	exit
+	exit 1
 	}
 
 # Check for sane lv settings
