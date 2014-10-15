@@ -62,6 +62,9 @@ zm_snapshot_path=/tmp/opt-snapshot
 # backup_util - which utility to use for backup: rsync or obnam
 backup_util=rsync
 
+# obnam_keep_policy - If set and using obnam, causes obnam to forget old backups according to $obnam_keep_policy policy
+obnam_keep_policy=14d,8w,12m
+
 # V - verbose data transfer - to enable, set to "v"
 # V=v
 V=

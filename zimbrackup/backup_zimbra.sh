@@ -44,6 +44,7 @@ source backup_zimbra_config
 # zm_snapshot_extents=
 # zm_snapshot_path=/tmp/opt-snapshot
 # backup_util=rsync
+# obnam_keep_policy=14d,8w,12m
 # V=
 # debug=
 
@@ -135,7 +136,11 @@ case $backup_util in
 		# Use obnam
 		say "backing up via obnam to the backup directory $zm_backup_path"
 		[[ $V = "v" ]] && verbose="--verbose"
-		obnam backup $verbose --repository $zm_backup_path $zm_snapshot_path/$zm_path || error "error creating obname backup"
+		obnam backup $verbose --repository $zm_backup_path $zm_snapshot_path/$zm_path || error "error creating obnam backup"
+		if [[ $obnam_keep_policy ]]; then
+			say "forgetting old obnam backups according to policy: $obnam_keep_policy"
+			obnam forget $verbose --repository $zm_backup_path --keep $obnam_keep_policy || error "error forgetting obnam backups"
+		fi
 		;;
 esac
 
