@@ -118,6 +118,9 @@ fi
 say "starting the Zimbra services in the background....."
 (/etc/init.d/zimbra start && say "services background startup completed") || error "services background startup FAILED" &
 
+# zmconfigd in Zimbra 8.6 seems to have a hard time getting going during heavy I/O; let's give it time to start up before the backup begins
+sleep 120
+
 # Create a mountpoint to mount the logical volume to
 say "creating mountpoint for the LV"
 mkdir -p $zm_snapshot_path || error "error creating snapshot mount point $zm_snapshot_path"
