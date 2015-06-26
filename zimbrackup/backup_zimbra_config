@@ -19,41 +19,60 @@
   
 #### Modify the following variables according to your installation
 
-# backup_dir - directory to backup to 
+# zm_backup_path - directory to backup to
 zm_backup_path=/opt.bak
 
 # zm_lv - the Logical Volume that contains /opt/zimbra - /opt mount point expected
 zm_lv=opt
 
-# vol_group - the Volume Group that contains $zm_lv
+# zm_lv_mount_point - mount point of Logical Volume containg Zimbra - if set, will be unmount to ensure clean filesytem before snapshot
+# MUST be fully set up in /etc/fstab and must NOT be in use by anything other than Zimbra
+zm_lv_mount_point=
+
+# zm_vg - the Volume Group that contains $zm_lv
 zm_vg=data
 
-# zimbra_path - the path beneath the Logical Volume $zm_lv that needs to be synced
+# zm_path - the path beneath the Logical Volume $zm_lv that needs to be synced
 zm_path=
 
-# zm_lv_fs - the file system type (ext3, xfs, ...) in /opt/zimbra
-zm_lv_fs=ext3
+# zm_lv_fs - the file system type (ext3, xfs, ...) of $zm_lv
+zm_lv_fs=auto
 
-# lvcreate lvremove - path and command for the lvm logical volume creation and deletion command
+# zm_mount_opts - options for mount, ZFS may need nouuid
+zm_mount_opts=ro
+
+# LVCREATE, LVREMOVE - path and command for the lvm logical volume creation and deletion command
 LVCREATE=/sbin/lvcreate
 LVREMOVE=/sbin/lvremove
 
 #### Modify the following variables according to your taste and needs
 
-# zmsnapshot - the snapshot volume name for $zm_lv
+# zm_snapshot - the snapshot volume name for $zm_lv
 zm_snapshot=opt-snapshot
 
-# zmsnapshot_size - size avalable for growing the snapshot
-zm_snapshot_size=1GB
+# zm_snapshot_size - size avalable for growing the snapshot - set either this or zm_snapshot_extents
+zm_snapshot_size=1G
 
-# zm_snapshot_mnt - zimbra snapshot mount point
+# zm_snapshot_extents - number of extents avalable for growing the snapshot - set either this or zm_snapshot_size
+#zm_snapshot_extents=50%FREE
+
+# zm_snapshot_path - zimbra snapshot mount point
 zm_snapshot_path=/tmp/opt-snapshot
 
-# rsync verbose set to "v"
+# backup_util - which utility to use for backup: rsync or obnam
+backup_util=rsync
+
+# obnam_tune - additional options passed to obnam backup - intended for performance options, but could be anything, including paths!
+obnam_tune="--lru-size=1024 --upload-queue-size=512"
+
+# obnam_keep_policy - If set and using obnam, causes obnam to forget old backups according to $obnam_keep_policy policy
+obnam_keep_policy=14d,8w,12m
+
+# V - verbose data transfer - to enable, set to "v"
 # V=v
 V=
 
-#  pause at each step if $debug is set to a non-zero string
+# debug - pause at each step if $debug is set to a non-zero string
 debug=
 
 #### Following parameters probably shouldn't need to be changed

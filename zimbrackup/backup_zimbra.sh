@@ -32,14 +32,20 @@
 source backup_zimbra_config
 # zm_backup_path=/opt.bak
 # zm_lv=opt
+# zm_lv_mount_point=
 # zm_vg=data
 # zm_path=
-# zm_lv_fs=ext3
+# zm_lv_fs=auto
+# zm_mount_opts=ro
 # LVCREATE=/sbin/lvcreate
 # LVREMOVE=/sbin/lvremove
 # zm_snapshot=opt-snapshot
-# zm_snapshot_size=1GB
+# zm_snapshot_size=1G
+# zm_snapshot_extents=
 # zm_snapshot_path=/tmp/opt-snapshot
+# backup_util=rsync
+# obnam_tune="--lru-size=1024 --upload-queue-size=512"
+# obnam_keep_policy=14d,8w,12m
 # V=
 # debug=
 
@@ -71,11 +77,13 @@ error ()  {
 	echo -e $TIMESTAMP $MESSAGE >&2
 	logger -t $log_tag -p $log_facility.$log_level_err "$MESSAGE"
 	logger -t $log_tag -p $log_facility_mail.$log_level_err "$MESSAGE"
-	exit
+	exit 1
 	}
 
-# load kernel module to enable LVM snapshots
-/sbin/modprobe dm-snapshot || error "Error loading dm-snapshot module"
+# Check for sane lv settings
+if [[ $zm_snapshot_size && $zm_snapshot_extents ]]; then
+	error "cannot specify both byte size ($zm_snapshot_size) and number of extents ($zm_snapshot_extents) for snapshot; please set only one or the other"
+fi
 
 # Output date
 say "backup started"
@@ -85,13 +93,33 @@ say "stopping the Zimbra services, this may take some time"
 /etc/init.d/zimbra stop || error "error stopping Zimbra" 
 [ "$(ps -u zimbra -o "pid=")" ] && kill -9 $(ps -u zimbra -o "pid=") #added as a workaround to zimbra bug 18653
 
+# Unmount volume to ensure clean filesystem for snapshot
+if [[ $zm_lv_mount_point ]]; then
+	say "unmounting $zm_lv_mount_point"
+	umount $zm_lv_mount_point || error "unable to unmount $zm_lv_mount_point"
+fi
+
 # Create a logical volume called ZimbraBackup
 say "creating a LV called $zm_snapshot"
-$LVCREATE -L $zm_snapshot_size -s -n $zm_snapshot /dev/$zm_vg/$zm_lv  || error "error creating snapshot, exiting" 
+if [[ $zm_snapshot_size ]]; then
+	lv_size="-L $zm_snapshot_size"
+else
+	lv_size="-l $zm_snapshot_extents"
+fi
+$LVCREATE $lv_size -s -n $zm_snapshot /dev/$zm_vg/$zm_lv  || error "error creating snapshot, exiting" 
+
+# Remount original volume
+if [[ $zm_lv_mount_point ]]; then
+        say "re-mounting $zm_lv_mount_point"
+        mount $zm_lv_mount_point || error "unable to re-mount $zm_lv_mount_point"
+fi
 
 # Start the Zimbra services
 say "starting the Zimbra services in the background....."
 (/etc/init.d/zimbra start && say "services background startup completed") || error "services background startup FAILED" &
+
+# zmconfigd in Zimbra 8.6 seems to have a hard time getting going during heavy I/O; let's give it time to start up before the backup begins
+sleep 120
 
 # Create a mountpoint to mount the logical volume to
 say "creating mountpoint for the LV"
@@ -99,11 +127,26 @@ mkdir -p $zm_snapshot_path || error "error creating snapshot mount point $zm_sna
 
 # Mount the logical volume snapshot to the mountpoint
 say "mounting the snapshot $zm_snapshot"
-mount -t $zm_lv_fs -o nouuid,ro /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
+mount -t $zm_lv_fs -o $zm_mount_opts /dev/$zm_vg/$zm_snapshot $zm_snapshot_path
 
-# Create the current backup
-say "rsyncing the snapshot to the backup directory $backup_dir"
-rsync -aAH$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
+# Create the current backup using the configured tool
+case $backup_util in
+	rsync)
+		# Use rsync
+		say "rsyncing the snapshot to the backup directory $zm_backup_path"
+		rsync -aAHS$V --delete $zm_snapshot_path/$zm_path $zm_backup_path || say "error during rsync but continuing the backup script"
+		;;
+	obnam)
+		# Use obnam
+		say "backing up via obnam to the backup directory $zm_backup_path"
+		[[ $V = "v" ]] && verbose="--verbose"
+		obnam backup $verbose $obnam_tune --repository $zm_backup_path $zm_snapshot_path/$zm_path || error "error creating obnam backup"
+		if [[ $obnam_keep_policy ]]; then
+			say "forgetting old obnam backups according to policy: $obnam_keep_policy"
+			obnam forget $verbose --repository $zm_backup_path --keep $obnam_keep_policy || error "error forgetting obnam backups"
+		fi
+		;;
+esac
 
 # Unmount $zm_snapshot from $zm_snapshot_mnt
 say "unmounting the snapshot"
